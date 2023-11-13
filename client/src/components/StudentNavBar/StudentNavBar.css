@@ -1,0 +1,67 @@
+.StudentNavBar{
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+}
+
+a {
+    cursor: pointer;
+}
+
+.name {
+    width: 20%;
+    margin-right: 2%;
+}
+
+.nav-item {
+    padding: 5px;
+}
+
+.items button:hover{
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
+}
+
+.items button{
+    color : var(--bs-nav-link-color);
+}
+
+
+@media only screen and (max-width : 768px) {
+    .name img {
+        width: 40%;
+        height: auto;
+    }
+}
+
+@media only screen and (min-width : 768px) {
+    .name img {
+        width: 25%;
+        height: auto;
+    }
+}
+
+@media only screen and (min-width : 992px) {
+    .items{
+        margin-top: 2%;
+    }
+}
+
+@media only screen and (max-width : 992px) {
+    .items button{
+        margin-left: -3%;
+    }
+}
+
+.dropdown-menu {
+    --bs-dropdown-bg: #414040;
+}
+
+.dropdown-item {
+    color: #aeb0b2;
+    background-color: transparent;
+}
+
+.dropdown.show .dropdown-menu {
+    opacity: 1;
+}

@@ -1,0 +1,111 @@
+.student-signup {
+    margin-top: 30px;
+
+}
+
+.student-signup .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+
+}
+
+.student-signup .text {
+    color: #3c0098;
+    font-size: 30px;
+    font-weight: 700;
+
+}
+
+.student-signup .underline {
+    width: 95px;
+    height: 3px;
+    background: #3c009d;
+    border-radius: 9px;
+}
+
+.student-signup .signup-form {
+    margin-top: 35px;
+    gap: 20px;
+}
+
+.student-signup .login-account {
+    color: #4c00b4;
+    cursor: pointer;
+}
+
+.student-signup .login-account:hover {
+    text-decoration: underline;
+}
+
+.submit-signup-container{
+    display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.submit-signup-container .submit{
+    border-radius: 12px;
+    background-color: #4c00b4;
+    width: 120px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+@media only screen and (min-width : 768px) {
+    .student-signup .input-signup {
+        margin-top: 20px;
+        height: 55px;
+        background: #eaeaea;
+        border-radius: 6px;
+
+    }
+
+    .student-signup .input-signup input,
+    .input-group-text {
+        height: 50px;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #444242;
+        font-size: 19px;
+    }
+}
+
+@media only screen and (max-width : 768px) {
+    .student-signup .input-signup {
+        margin-top: 20px;
+        height: 55px;
+        background: #eaeaea;
+        border-radius: 6px;
+
+    }
+
+    .student-signup .input-signup input,
+    .input-group-text {
+        height: 50px;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #444242;
+        font-size: 19px;
+    }
+}
+
+.password-signup-eye{
+    float: right;
+    margin-top: 17px;
+    margin-right: 8%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.input-signup .signup-password{
+    margin-left: 10px;
+}

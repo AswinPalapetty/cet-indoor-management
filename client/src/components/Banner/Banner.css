@@ -1,0 +1,18 @@
+.carousel{
+    padding-top: 6%;
+}
+
+.c-item{
+    height: 347px;
+    background-size: cover;
+    background-position: center;
+}
+
+.c-img{
+    width: 100%;
+    height: auto;
+}
+
+#carouselExampleInterval{
+    height: 400px;
+}

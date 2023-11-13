@@ -1,0 +1,18 @@
+.title .first-letter {
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+ ul {
+     list-style: disc;
+     margin-left: 19px;
+ }
+
+ .content-ul li {
+     list-style: disc;
+ }
+
+.content{
+    margin-top: 3%;
+}

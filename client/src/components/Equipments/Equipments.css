@@ -1,0 +1,36 @@
+.equipments-title .first-letter {
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+.card-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card .submit, .submit:hover {
+    border-radius: 12px;
+    background-color: #4c00b4;
+    width: 120px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+
+@media only screen and (min-width : 767px){
+    .equipments-title{
+        margin-top: 8%;
+    }
+    
+}
+
+@media only screen and (max-width : 768px){
+    .equipments-title{
+        margin-top: 13%;
+    }
+    
+}
