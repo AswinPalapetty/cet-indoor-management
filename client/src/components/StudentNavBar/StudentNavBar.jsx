@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import './StudentNavBar.css'
 import cet_emblem_white1 from "../../images/cet_emblem_white1.png"
 import { useNavigate } from 'react-router-dom'
@@ -8,8 +8,14 @@ import Cookies from 'universal-cookie'
 function StudentNavBar() {
   const navigate = useNavigate()
   const { student, setStudent } = useContext(studentContext)
+  const [badminton, setBadminton] = useState(false)
 
   const cookies = new Cookies()
+
+  // Get the current date
+  const today = new Date();
+  // Format the date as needed
+  const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
   //Logout button
   const Logout = () => {
@@ -17,14 +23,6 @@ function StudentNavBar() {
     cookies.remove("jwt_authorization")
     setStudent(null)
     navigate('/student')
-  }
-
-  const badmintonBooking = () => {
-
-  }
-
-  const tableTennisBooking = () => {
-
   }
 
   return (
@@ -51,8 +49,8 @@ function StudentNavBar() {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Book your slot</a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Badminton Court</a></li>
-                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Table Tennis</a></li>
+                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => setBadminton(true)}>Badminton Court</a></li>
+                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => setBadminton(false)}>Table Tennis</a></li>
 
                   {/* <li><hr className="dropdown-divider" /></li>
                 <li><a className="dropdown-item" href="#">Something else here</a></li> */}
@@ -62,7 +60,7 @@ function StudentNavBar() {
 
               <li className="nav-item">
                 <div className="items">
-                  <button type="button" onClick={() => navigate('/cart')} class="btn btn-dark position-relative">
+                  <button type="button" onClick={() => navigate('/cart')} className="btn btn-dark position-relative">
                     My Cart
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
                       99+
@@ -79,7 +77,7 @@ function StudentNavBar() {
 
               <li className="nav-item">
                 <div className="items">
-                  <button type="button" class="btn btn-dark position-relative">
+                  <button type="button" className="btn btn-dark position-relative">
                     Announcements
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
                       99+
@@ -103,19 +101,38 @@ function StudentNavBar() {
 
       {/* MODAL */}
 
-      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div style={{ zIndex: "1" }} className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Book your Slot</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setBadminton(false)}></button>
             </div>
-            <div class="modal-body">
-              ...
+            <div className="modal-body">
+              <div class="mb-3">
+                <input type="text" class="form-control" value={badminton ? 'Badminton Court' : 'Table Tennis'} disabled />
+              </div>
+              <div className="mb-3">
+                <input type="date" class="form-control" value={formattedDate} disabled />
+              </div>
+              <div className="mb-3">
+                <select class="form-select" aria-label="Default select example">
+                  <option selected>Select your slot</option>
+                  <option value="1">9:30 - 10:30am</option>
+                  <option value="1">10:30 - 11:30am</option>
+                  <option value="1">11:30 - 12:30am</option>
+                  <option value="1">12:30 - 1:30am</option>
+                  <option value="1">1:30 - 2:30am</option>
+                  <option value="1">2:30 - 3:30am</option>
+                  <option value="1">3:30 - 4:30am</option>
+                  <option value="1">4:30 - 5:30am</option>
+                  <option value="1">5:30 - 6:30am</option>
+                </select>
+              </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Understood</button>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type='submit' className="slot-submit btn">Confirm</button>
             </div>
           </div>
         </div>

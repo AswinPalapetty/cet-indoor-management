@@ -65,3 +65,16 @@ a {
 .dropdown.show .dropdown-menu {
     opacity: 1;
 }
+
+.modal-backdrop.show {
+    z-index: 1;
+}
+
+.slot-submit, .slot-submit:hover {
+    border-radius: 8px;
+    background-color: #4c00b4;
+    width: 90px;
+    height: 38px;
+    color: #fff;
+    font-weight: 500;
+}
