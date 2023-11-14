@@ -4,6 +4,15 @@
     font-weight: 700;
 }
 
+.cart-confirm-btn, .cart-confirm-btn:hover{
+    border-radius: 12px;
+    background-color: #4c00b4;
+    width: 100px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+}
+
 @media only screen and (min-width : 767px){
     .cart-title{
         margin-top: 8%;

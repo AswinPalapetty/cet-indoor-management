@@ -7,7 +7,7 @@ function Equipments() {
         <div>
             <StudentNavBar />
             <div className="container-fluid">
-                <div className="row justify-content-center">
+                <div className="row">
                     <h2 className="text-center equipments-title"><span className="first-letter">E</span>QUIPMENTS</h2>
 
                     <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">

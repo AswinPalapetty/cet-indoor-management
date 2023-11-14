@@ -118,15 +118,18 @@ function StudentNavBar() {
               <div className="mb-3">
                 <select class="form-select" aria-label="Default select example">
                   <option selected>Select your slot</option>
-                  <option value="1">9:30 - 10:30am</option>
-                  <option value="1">10:30 - 11:30am</option>
-                  <option value="1">11:30 - 12:30am</option>
-                  <option value="1">12:30 - 1:30am</option>
-                  <option value="1">1:30 - 2:30am</option>
-                  <option value="1">2:30 - 3:30am</option>
-                  <option value="1">3:30 - 4:30am</option>
-                  <option value="1">4:30 - 5:30am</option>
-                  <option value="1">5:30 - 6:30am</option>
+                  <option value="9:30-10:30">9:30 - 10:30am</option>
+                  <option value="10:30-11:30">10:30 - 11:30am</option>
+                  <option value="11:30-12:30">11:30 - 12:30pm</option>
+                  <option value="12:30-13:30">12:30 - 1:30pm</option>
+                  <option value="13:30-14:30">1:30 - 2:30pm</option>
+                  <option value="14:30-15:30">2:30 - 3:30pm</option>
+                  <option value="15:30-16:30">3:30 - 4:30pm</option>
+                  <option value="16:30-17:30">4:30 - 5:30pm</option>
+                  <option value="17:30-18:30">5:30 - 6:30pm</option>
+                  <option value="18:30-19:30">6:30 - 7:30pm</option>
+                  <option value="19:30-20:30">7:30 - 8:30pm</option>
+                  <option value="20:30-21:30">8:30 - 9:30pm</option>
                 </select>
               </div>
             </div>

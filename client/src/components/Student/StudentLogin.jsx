@@ -44,7 +44,7 @@ function StudentLogin() {
       validationErrors.admission = "Enter a valid Admission Number."
     }
     if (!password.trim()) {
-      validationErrors.password = "Password is required"
+      validationErrors.password = "Password is required."
     }
 
     setErrors(validationErrors)

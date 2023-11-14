@@ -35,6 +35,11 @@ function Cart() {
                                     <td><button type="button" class="btn btn-outline-primary">-</button><span style={{fontSize :"larger",fontWeight:"bold",marginLeft:"3%",marginRight:"3%"}}> 1 </span><button type="button" class="btn btn-outline-primary">+</button></td>
                                     <td><button type="button" class="btn btn-danger">Remove</button></td>
                                 </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td><button type="button" class="btn cart-confirm-btn">Confirm</button></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

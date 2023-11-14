@@ -1,28 +1,28 @@
-import studentModel from "../models/studentModel.js";
+import staffModel from "../models/staffModel.js";
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 
 const saltRounds = 10; //for password hashing
 
-export const studentSignup = async (studentData) => {
-    try {
-        // Check if the user already exists
-        const existingUser = await studentModel.findOne({ admission: studentData.admission });
+export const staffSignup = async (staffData)=>{
+    try{
+        //Check if the user already exists
+        const existingUser = await staffModel.findOne({ staffno: staffData.staffno });
 
         if (existingUser) {
-            return { message: "Account already exists for this Admission Number.", token: null };
+            return { message: "Account already exists for this Staff Number.", token: null };
         } else {
             // Hash the password
-            const hashedPassword = await bcrypt.hash(studentData.password, saltRounds);
+            const hashedPassword = await bcrypt.hash(staffData.password, saltRounds);
 
             // Save the user
-            const user = await new studentModel({ ...studentData, password: hashedPassword }).save();
+            const user = await new staffModel({ ...staffData, password: hashedPassword }).save();
 
             const token = await JWT.sign({ _id: user._id }, "7327bc47d4nd3mfds&*^@4wer", {
                 expiresIn: "7d"
             })
 
-            //select specific keys and returning
+            // //select specific keys and returning
             // const selectedKeys = ['name', 'email', 'admission', 'mobile'];
 
             // const selectedUserData = {};
@@ -32,17 +32,18 @@ export const studentSignup = async (studentData) => {
 
             return { message: "Account created successfully.", token};
         }
-    } catch (error) {
+    }
+    catch (error) {
         throw error; // Handle or log the error as needed
     }
 };
 
-export const studentLogin = async (studentData) => {
+export const staffLogin = async (staffData)=>{
     try {
-        const existingUser = await studentModel.findOne({ admission: studentData.admission });
+        const existingUser = await staffModel.findOne({ staffno: staffData.staffno });
 
         if (existingUser) {
-            const password_status = await bcrypt.compare(studentData.password,existingUser.password)
+            const password_status = await bcrypt.compare(staffData.password,existingUser.password)
             if (password_status) {
                 const token = await JWT.sign({ _id: existingUser._id }, "7327bc47d4nd3mfds&*^@4wer", {
                     expiresIn: "7d"
@@ -57,9 +58,9 @@ export const studentLogin = async (studentData) => {
             }
         }
         else {
-            return { message: "Admission Number is not registered", token: null }
+            return { message: "Staff Number is not registered", token: null }
         }
     } catch (error) {
         throw error; // Handle or log the error as needed
     }
-};
+}
