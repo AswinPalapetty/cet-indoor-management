@@ -18,7 +18,7 @@ export const studentSignup = async (studentData) => {
             // Save the user
             const user = await new studentModel({ ...studentData, password: hashedPassword }).save();
 
-            const token = await JWT.sign({ _id: user._id }, "7327bc47d4nd3mfds&*^@4wer", {
+            const token = await JWT.sign({ _id: user._id }, process.env.TOKEN, {
                 expiresIn: "7d"
             })
 
@@ -44,7 +44,7 @@ export const studentLogin = async (studentData) => {
         if (existingUser) {
             const password_status = await bcrypt.compare(studentData.password,existingUser.password)
             if (password_status) {
-                const token = await JWT.sign({ _id: existingUser._id }, "7327bc47d4nd3mfds&*^@4wer", {
+                const token = await JWT.sign({ _id: existingUser._id }, process.env.TOKEN, {
                     expiresIn: "7d"
                 })
                 return {

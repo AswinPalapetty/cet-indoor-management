@@ -18,7 +18,7 @@ export const staffSignup = async (staffData)=>{
             // Save the user
             const user = await new staffModel({ ...staffData, password: hashedPassword }).save();
 
-            const token = await JWT.sign({ _id: user._id }, "7327bc47d4nd3mfds&*^@4wer", {
+            const token = await JWT.sign({ _id: user._id }, process.env.TOKEN, {
                 expiresIn: "7d"
             })
 
@@ -45,7 +45,7 @@ export const staffLogin = async (staffData)=>{
         if (existingUser) {
             const password_status = await bcrypt.compare(staffData.password,existingUser.password)
             if (password_status) {
-                const token = await JWT.sign({ _id: existingUser._id }, "7327bc47d4nd3mfds&*^@4wer", {
+                const token = await JWT.sign({ _id: existingUser._id }, process.env.TOKEN, {
                     expiresIn: "7d"
                 })
                 return {

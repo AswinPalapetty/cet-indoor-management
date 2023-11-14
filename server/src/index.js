@@ -10,7 +10,6 @@ config()
 
 //mongodb configuration
 connectDB()
-
 const app  = express()
 
 app.use(cors());
@@ -18,6 +17,6 @@ app.use(express.json());
 app.use("/student",student);
 app.use("/staff",staff);
 
-app.listen(3001, ()=>{
-    console.log("Server is running on port 3001");
+app.listen(process.env.PORT, ()=>{
+    console.log("Server is running.");
 })

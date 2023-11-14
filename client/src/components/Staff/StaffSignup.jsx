@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './StaffSignup.css'
 import { useNavigate } from 'react-router-dom'
 import { staffContext } from '../../contexts/StaffContext'
@@ -23,6 +23,19 @@ function StaffSignup() {
   const [ConfirmVisibility, setConfirmVisibility] = useState(false)
 
   const [errors, setErrors] = useState({})
+
+  //Execute when page loads
+  useEffect(() => {
+    const jwtToken = cookies.get("jwt_staff_authorization")
+
+    if (jwtToken) {
+      // Decode the token
+      const decoded = jwtDecode(jwtToken);
+
+      // Set the staff state
+      setStaff(decoded);
+    }
+  })
 
   const signUp = (e) => {
     e.preventDefault();
