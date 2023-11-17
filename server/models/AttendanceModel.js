@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const userSchema = new mongoose.Schema({
+const schema = new mongoose.Schema({
     name:{
         type:String,
         required:true,
@@ -8,8 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     admission:{
         type:String,
-        required:true,
-        unique:true
+        required:true
     },
     mobile:{
         type:String,
@@ -19,15 +18,19 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    email:{
+    intime:{
         type:String,
-        required:true,
-        unique:true
+        required:true
     },
-    password:{
+    today:{
+        type:Boolean,
+        required:true
+    },
+    type:{
         type:String,
+        enum:['gym','indoor'],
         required:true
     }
 },{timestamps:true})
 
-export default mongoose.model('students',userSchema,"students")
+export default mongoose.model(' ',schema,"attendance")

@@ -1,0 +1,45 @@
+.manage-equipment-title .first-letter {
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+.manage-equipment-title{
+    margin-bottom: 3%;
+}
+
+.add-equipment-btn, .add-equipment-btn:hover{
+    border-radius: 5px;
+    border: none;
+    background-color: #4c00b4;
+    width: 160px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+    text-wrap: nowrap;
+}
+
+.update-stock-submit, .update-stock-submit:hover{
+    border-radius: 5px;
+    border: none;
+    background-color: #4c00b4;
+    width: 160px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+    text-wrap: nowrap;
+}
+
+@media only screen and (min-width : 767px) {
+    .manage-equipment-title {
+        margin-top: 8%;
+    }
+
+}
+
+@media only screen and (max-width : 768px) {
+    .manage-equipment-title {
+        margin-top: 13%;
+    }
+
+}

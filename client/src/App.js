@@ -13,6 +13,11 @@ import StaffLogin from './components/Staff/StaffLogin';
 import StaffSignup from './components/Staff/StaffSignup';
 import Equipments from './components/Equipments/Equipments';
 import Cart from './components/Cart/Cart';
+import IndoorAttendance from './components/Attendance/IndoorAttendance'
+import GymAttendance from './components/Attendance/GymAttendance'
+import ManageEquipments from './components/ManageEquipments/ManageEquipments'
+import ManageSlots from './components/ManageSlots/ManageSlots'
+import ManageAnnouncements from './components/ManageAnnouncements/ManageAnnouncements'
 
 function App() {
   const {student} = useContext(studentContext)
@@ -23,11 +28,16 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />}/>
         <Route path='student' element={student ? <Student/> : <StudentLogin />}/>
-        <Route path='staff' element={staff ? <Staff/> : <StaffLogin />}/>
-        <Route path='equipments' element={student ? <Equipments/> : <StudentLogin />}/>
-        <Route path='cart' element={student ? <Cart/> : <StudentLogin />}/>
-        <Route path='staff/signup' element={staff ? <Staff/> : <StaffSignup/>}/>
         <Route path='student/signup' element={student ? <Student/> : <StudentSignup/>}/>
+        <Route path='student/equipments' element={student ? <Equipments/> : <StudentLogin />}/>
+        <Route path='student/cart' element={student ? <Cart/> : <StudentLogin />}/>
+        <Route path='staff' element={staff ? <Staff/> : <StaffLogin />}/>
+        <Route path='staff/signup' element={staff ? <Staff/> : <StaffSignup/>}/>
+        <Route path='staff/indoorAttendance' element={staff ? <IndoorAttendance /> : <StaffLogin />} />
+        <Route path='staff/gymAttendance' element={staff ? <GymAttendance /> : <StaffLogin />} />
+        <Route path='staff/equipments' element={staff ? <ManageEquipments /> : <StaffLogin />} />
+        <Route path='staff/slots' element={staff ? <ManageSlots /> : <StaffLogin />} />
+        <Route path='staff/announcements' element={staff ? <ManageAnnouncements /> : <StaffLogin />} />
       </Routes>
     </div>
   );

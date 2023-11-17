@@ -1,4 +1,6 @@
 import staffModel from "../models/staffModel.js";
+import studentModel from '../models/studentModel.js';
+import AttendanceModel from '../models/AttendanceModel.js'
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 
@@ -45,7 +47,7 @@ export const staffLogin = async (staffData)=>{
         if (existingUser) {
             const password_status = await bcrypt.compare(staffData.password,existingUser.password)
             if (password_status) {
-                const token = await JWT.sign({ _id: existingUser._id }, process.env.TOKEN, {
+                const token = JWT.sign({ _id: existingUser._id }, process.env.TOKEN, {
                     expiresIn: "7d"
                 })
                 return {
@@ -62,5 +64,91 @@ export const staffLogin = async (staffData)=>{
         }
     } catch (error) {
         throw error; // Handle or log the error as needed
+    }
+}
+
+export const findStudent = async (admission)=>{
+    try{
+        const includedFields = ['name', 'department', 'mobile'];
+        const student = await studentModel.findOne({ admission }).select(includedFields.join(' '));
+
+        if(student){
+            return {student, message : "Student found."}
+        }
+        else{
+            return {student:null, message:"Student not found."}
+        }
+    }
+    catch (error){
+        throw error; // Handle or log the error as needed
+    }
+}
+
+export const markIndoorAttendance = async (studentData)=>{
+    try{
+        const student = await AttendanceModel.findOne({ admission : studentData.admission, today:true, type:'indoor'});
+        if(student){
+            return {studentAttendance : null, message : "Attendance already marked."}
+        }
+        else{
+            // Save indoor attendance
+            const studentAttendance = await new AttendanceModel({...studentData, today : true, type:'indoor'}).save();
+
+            // fetch todays attendance
+            // const todaysAttendance = await AttendanceModel.find({ today : true });
+            return {studentAttendance,message:"Attendance marked successfully."};
+
+        }
+    }
+    catch (error){
+        throw error; // Handle or log the error as needed
+    }
+}
+
+export const fetchIndoorAttendance = async ()=>{
+    try{
+        const todaysAttendance = await AttendanceModel.find({today : true,type:'indoor'});
+        if(todaysAttendance){
+            return {todaysAttendance}
+        }
+        else{
+            return {todaysAttendance : null}
+        }
+    }
+    catch (error){
+        console.error(error);
+    }
+}
+
+export const markGymAttendance = async (studentData)=>{
+    try{
+        const student = await AttendanceModel.findOne({ admission : studentData.admission, today:true, type:'gym'});
+        if(student){
+            return {studentAttendance : null, message : "Attendance already marked."}
+        }
+        else{
+            // Save indoor attendance
+            const studentAttendance = await new AttendanceModel({...studentData, today : true, type:'gym'}).save();
+            return {studentAttendance,message:"Attendance marked successfully."};
+
+        }
+    }
+    catch (error){
+        throw error; // Handle or log the error as needed
+    }
+}
+
+export const fetchGymAttendance = async ()=>{
+    try{
+        const todaysAttendance = await AttendanceModel.find({today : true, type:'gym'});
+        if(todaysAttendance){
+            return {todaysAttendance}
+        }
+        else{
+            return {todaysAttendance : null}
+        }
+    }
+    catch (error){
+        console.error(error);
     }
 }

@@ -21,7 +21,6 @@ function StudentNavBar() {
   const Logout = () => {
     setStudent(null)
     cookies.remove("jwt_authorization")
-    setStudent(null)
     navigate('/student')
   }
 
@@ -44,7 +43,7 @@ function StudentNavBar() {
                 <a className="nav-link" aria-current="page" onClick={() => navigate('/student')}>Home</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" onClick={() => navigate('/equipments')}>Equipments</a>
+                <a className="nav-link" onClick={() => navigate('/student/equipments')}>Equipments</a>
               </li>
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Book your slot</a>
@@ -60,7 +59,7 @@ function StudentNavBar() {
 
               <li className="nav-item">
                 <div className="items">
-                  <button type="button" onClick={() => navigate('/cart')} className="btn btn-dark position-relative">
+                  <button type="button" onClick={() => navigate('/studentc/cart')} className="btn btn-dark position-relative">
                     My Cart
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
                       99+
