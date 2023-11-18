@@ -4,6 +4,8 @@ import AttendanceModel from '../models/AttendanceModel.js'
 import equipmentsModel from '../models/equipmentsModel.js'
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
+import fs from "fs";
+import mongoose from "mongoose";
 
 const saltRounds = 10; //for password hashing
 
@@ -158,7 +160,7 @@ export const addEquipment = async (equipmentData) => {
     try {
 
         // Save equipment details
-        const equipment = await new equipmentsModel({ ...equipmentData}).save();
+        const equipment = await new equipmentsModel({ ...equipmentData }).save();
         return { equipment, message: "New equipment added." };
 
     }
@@ -167,7 +169,42 @@ export const addEquipment = async (equipmentData) => {
     }
 }
 
-export const getEquipments = async ()=>{
+export const updateEquipment = async (equipmentData) => {
+    try {
+        const id = new mongoose.Types.ObjectId(equipmentData.id);
+        // Update equipment details
+        await equipmentsModel.findByIdAndUpdate(
+            id,
+            { $set: { equipment: equipmentData.equipment, stock: equipmentData.stock } })
+        const equipments = await getEquipments();
+        return { ...equipments, message: "Updated succcessfully." };
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteEquipment = async (equipmentData) => {
+    try {
+        const filePath = './public/images/' + equipmentData.filename;
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Error deleting file: ${err}`);
+            } else {
+                console.log(`File deleted: ${filePath}`);
+            }
+        });
+
+        const id = new mongoose.Types.ObjectId(equipmentData.id);
+        await equipmentsModel.findByIdAndDelete(id);
+        const equipments = await getEquipments();
+        return { ...equipments, message: "Deleted succcessfully." };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getEquipments = async () => {
     try {
         const equipments = await equipmentsModel.find({});
         if (equipments) {
@@ -178,6 +215,6 @@ export const getEquipments = async ()=>{
         }
     }
     catch (error) {
-        console.error(error);
+        throw error;
     }
 }

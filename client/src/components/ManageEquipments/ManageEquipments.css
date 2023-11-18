@@ -23,10 +23,22 @@
     border-radius: 5px;
     border: none;
     background-color: #4c00b4;
-    width: 160px;
+    width: 130px;
     height: 45px;
     color: #fff;
-    font-weight: 500;
+    font-weight: 400;
+    text-wrap: nowrap;
+}
+
+.delete-stock-submit, .delete-stock-submit:hover{
+    border-radius: 5px;
+    margin-left: 12%;
+    border: none;
+    background-color: #dc2727;
+    width: 105px;
+    height: 45px;
+    color: #fff;
+    font-weight: 400;
     text-wrap: nowrap;
 }
 

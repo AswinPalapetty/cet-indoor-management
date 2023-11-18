@@ -18,10 +18,10 @@ function Equipments() {
                 <div className="row justify-content-center mb-5">
                     <h2 className="text-center equipments-title"><span className="first-letter">E</span>QUIPMENTS</h2>
 
-                    {equipments.map((rowData) => (
+                    {equipments ? equipments.map((rowData) => (
                         <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-                            <div className="card" style={{ width: "18rem" }}>
-                                <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} />
+                            <div className="card" style={{ width: "19rem", height : "20rem" }}>
+                                <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} style={{height :"40%",objectFit:"contain"}}/>
                                 <div className="card-body">
                                     <h5 className="card-title">{rowData.equipment}</h5>
                                     <p className="card-text">
@@ -32,7 +32,7 @@ function Equipments() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    )) : <h3 className='text-center'>Equipments not found.</h3>}
 
                 </div>
             </div>

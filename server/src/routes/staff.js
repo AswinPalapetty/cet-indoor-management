@@ -1,5 +1,5 @@
 import express from "express";
-import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments} from "../../helpers/staff-helpers.js"
+import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment} from "../../helpers/staff-helpers.js"
 import multer from "multer"
 var router = express.Router()
 
@@ -88,9 +88,28 @@ router.post('/addEquipment', upload.single('file'), async (req,res)=>{
     try {
         delete req.body.file;
         const filename = req.file.originalname;
-        const result = await addEquipment({...req.body,filename}).then((result)=>{
+        await addEquipment({...req.body,filename}).then((result)=>{
             res.json(result)
         })
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.post('/updateEquipment', async (req,res)=>{
+    try{
+        const result = await updateEquipment({...req.body});
+        res.json(result)
+    }
+    catch (error){
+        console.error(error);
+    }
+})
+
+router.post('/deleteEquipment',async (req,res)=>{
+    try {
+        const result = await deleteEquipment({...req.body});
+        res.json(result)
     } catch (error) {
         console.error(error);
     }
