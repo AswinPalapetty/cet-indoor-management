@@ -1,6 +1,7 @@
 import studentModel from "../models/studentModel.js";
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
+import equipmentsModel from "../models/equipmentsModel.js";
 
 const saltRounds = 10; //for password hashing
 
@@ -63,3 +64,18 @@ export const studentLogin = async (studentData) => {
         throw error; // Handle or log the error as needed
     }
 };
+
+export const getEquipments = async ()=>{
+    try {
+        const equipments = await equipmentsModel.find({});
+        if (equipments) {
+            return { equipments }
+        }
+        else {
+            return { equipments: [] }
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+}

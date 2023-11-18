@@ -33,4 +33,4 @@ const schema = new mongoose.Schema({
     }
 },{timestamps:true})
 
-export default mongoose.model(' ',schema,"attendance")
+export default mongoose.model('attendance',schema,"attendance")

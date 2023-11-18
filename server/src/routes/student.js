@@ -1,5 +1,5 @@
 import express from "express"
-import { studentLogin, studentSignup } from "../../helpers/student-helpers.js";
+import { getEquipments, studentLogin, studentSignup } from "../../helpers/student-helpers.js";
 var router = express.Router();
 
 /* GET home page. */
@@ -24,5 +24,14 @@ router.post('/login', async (req, res) => {
     console.error(error);
   }
 });
+
+router.get('/getEquipments', async (req,res)=>{
+  try {
+      const result = await getEquipments();
+      res.json(result);
+  } catch (error) {
+      console.error(error);
+  }
+})
 
 export default router;

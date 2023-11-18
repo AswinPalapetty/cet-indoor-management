@@ -1,11 +1,40 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './ManageEquipments.css'
 import StaffNavBar from '../StaffNavBar/StaffNavBar'
+import axios from '../../utilities/Axios'
+import { baseUrl } from '../../utilities/Constants'
 
 function ManageEquipments() {
+  const ButtonRef = useRef(null);
+  const fileInputRef = useRef();
+
   const [equipment, setEquipment] = useState('')
   const [stock, setStock] = useState('')
   const [file, setFile] = useState('')
+  const [insertedEquipments, setInsertedEquipments] = useState([])
+
+  useEffect(() => {
+    axios.get('/staff/getEquipments').then((result) => {
+      setInsertedEquipments(result.data.equipments)
+    })
+  }, [])
+
+  const addEquipment = () => {
+    const formData = { equipment, stock, file }
+    axios.post('/staff/addEquipment', formData, { headers: { "Content-Type": "multipart/form-data" } }).then((result) => {
+      if (result.data.equipment) {
+        setInsertedEquipments([...insertedEquipments, result.data.equipment]);
+        setEquipment('');
+        setStock('');
+        setFile('');
+        // Clear the file input 
+        fileInputRef.current.value = '';
+        
+        alert(result.data.message);
+        ButtonRef.current.click();
+      }
+    })
+  }
   return (
     <div>
 
@@ -21,60 +50,26 @@ function ManageEquipments() {
           </div>
         </div>
 
-        <div className="row justify-content-center mb-5">
-          <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-            <div className="card" style={{ width: "18rem" }}>
-              <img src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" className="card-img-top" alt="..." />
-              <div className="card-body">
-                <h5 className="card-title">Cricket Bat</h5>
-                <p className="card-text">
-                  <small className='text-primary-emphasis'><i>Current Stock : 12</i></small>
-                </p>
-                <button type='submit' className="update-stock-submit btn">Update Stock</button>
-              </div>
-            </div>
-          </div>
+        {(insertedEquipments.length > 0) &&
+          <div className="row justify-content-center mb-5">
 
-          <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-            <div className="card" style={{ width: "18rem" }}>
-              <img src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" className="card-img-top" alt="..." />
-              <div className="card-body">
-                <h5 className="card-title">Cricket Bat</h5>
-                <p className="card-text">
-                  <small className='text-primary-emphasis'><i>Current Stock : 12</i></small>
-                </p>
-                <button type='submit' className="update-stock-submit btn">Update Stock</button>
+            {insertedEquipments.map((rowData) => (
+              <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
+                <div className="card" style={{ width: "18rem" }}>
+                  <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} />
+                  <div className="card-body">
+                    <h5 className="card-title">{rowData.equipment}</h5>
+                    <p className="card-text">
+                      <small className='text-primary-emphasis'><i>Current Stock : {rowData.stock}</i></small>
+                    </p>
+                    <button type='submit' className="update-stock-submit btn">Update Stock</button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            ))}
 
-          <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-            <div className="card" style={{ width: "18rem" }}>
-              <img src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" className="card-img-top" alt="..." />
-              <div className="card-body">
-                <h5 className="card-title">Cricket Bat</h5>
-                <p className="card-text">
-                  <small className='text-primary-emphasis'><i>Current Stock : 12</i></small>
-                </p>
-                <button type='submit' className="update-stock-submit btn">Update Stock</button>
-              </div>
-            </div>
           </div>
-
-          <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-            <div className="card" style={{ width: "18rem" }}>
-              <img src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" className="card-img-top" alt="..." />
-              <div className="card-body">
-                <h5 className="card-title">Cricket Bat</h5>
-                <p className="card-text">
-                  <small className='text-primary-emphasis'><i>Current Stock : 12</i></small>
-                </p>
-                <button type='submit' className="update-stock-submit btn">Update Stock</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        }
 
       </div>
 
@@ -91,21 +86,31 @@ function ManageEquipments() {
 
             <div className="modal-body">
               <div className="form-floating mb-3">
-                <input type="text" className="form-control" onChange={(e) => setEquipment(e.target.value)} />
+                <input type="text" className="form-control" value={equipment} onChange={(e) => setEquipment(e.target.value)} />
                 <label for="floatingInput">Name of Equipment</label>
               </div>
               <div className="form-floating mb-3">
-                <input type="text" className="form-control" onChange={(e) => setStock(e.target.value)} />
+                <input type="text" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
                 <label for="floatingInput">Current Stock</label>
               </div>
               <div className='mb-3'>
-                <input class="form-control form-control-lg" type="file" onChange={(e) => console.log(e.target.files[0])} />
+
+                <input
+                  ref={fileInputRef}
+                  class="form-control form-control-lg"
+                  type="file"
+                  onChange={(e) => {
+                    const datetimeName = "" + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + "." + e.target.files[0].name.split('.').pop();
+                    const newFile = new File([e.target.files[0]], datetimeName, { type: e.target.files[0].type });
+                    setFile(newFile);
+                  }
+                  } />
+
               </div>
             </div>
-
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type='submit' className="slot-submit btn">Add</button>
+              <button ref={ButtonRef} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type='submit' className="slot-submit btn" onClick={addEquipment}>Add</button>
             </div>
 
           </div>

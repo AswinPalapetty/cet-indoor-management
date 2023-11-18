@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/student",student);
 app.use("/staff",staff);
+app.use('/images', express.static('./public/images'));
 
 app.listen(process.env.PORT, ()=>{
     console.log("Server is running.");
