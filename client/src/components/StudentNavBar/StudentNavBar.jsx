@@ -4,11 +4,13 @@ import cet_emblem_white1 from "../../images/cet_emblem_white1.png"
 import { useNavigate } from 'react-router-dom'
 import { studentContext } from '../../contexts/StudentContext'
 import Cookies from 'universal-cookie'
+import { cartContext } from '../../contexts/CartContext'
 
 function StudentNavBar() {
   const navigate = useNavigate()
   const { student, setStudent } = useContext(studentContext)
   const [badminton, setBadminton] = useState(false)
+  const { cartLength } = useContext(cartContext)
 
   const cookies = new Cookies()
 
@@ -59,12 +61,11 @@ function StudentNavBar() {
 
               <li className="nav-item">
                 <div className="items">
-                  <button type="button" onClick={() => navigate('/studentc/cart')} className="btn btn-dark position-relative">
+                  <button type="button" onClick={() => navigate('/student/cart')} className="btn btn-dark position-relative">
                     My Cart
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                      99+
+                    {cartLength > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">{cartLength}
                       <span className="visually-hidden">unread messages</span>
-                    </span>
+                    </span>}
                   </button>
                 </div>
               </li>
