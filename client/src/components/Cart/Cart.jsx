@@ -1,16 +1,65 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './Cart.css'
 import StudentNavBar from '../StudentNavBar/StudentNavBar'
+import axios from '../../utilities/Axios'
+import Cookies from 'universal-cookie'
+import { baseUrl } from '../../utilities/Constants'
+import ClipLoader from "react-spinners/ClipLoader";
+import { cartContext } from '../../contexts/CartContext'
 
 function Cart() {
+    const cookies = new Cookies();
+    const { cartLength, setCartLength } = useContext(cartContext)
+    const [cartItems, setCartItems] = useState([])
+    const [loading, setLoading] = useState(true)
+    const jwtToken = cookies.get("jwt_authorization")
+
+    useEffect(() => {
+        getCartItems();
+
+    }, [])
+
+    const getCartItems = async () => {
+        const { data } = await axios.get('/student/getCartItems', { headers: { Authorization: jwtToken } });
+        setCartLength(data.cartData.length)
+        setCartItems(data.cartData)
+        setLoading(false);
+    }
+
+    const deleteItem = (cartItemId) => {
+        axios.post('/student/deleteItem', { cartItemId }, { headers: { Authorization: jwtToken } }).then((result) => {
+            alert("Equipment removed from cart.")
+            setCartLength(cartLength - 1)
+            getCartItems();
+        });
+    }
+
+    const changeQuantity = (quantity, equipmentId) => {
+        axios.put('/student/updateQuantity/' + equipmentId, { quantity }, { headers: { Authorization: jwtToken } }).then(async (result) => {
+            if (result.data.status) {
+                getCartItems();
+            }
+            else{
+                alert(result.data.message)
+            }
+        })
+    }
+
+    const confirmOrder = () => {
+        axios.post('/student/confirmOrder', { cartItems: cartItems.map((cartItem) => ({ equipment: cartItem.equipment._id, quantity: cartItem.quantity })), student: cartItems[0].user }, { headers: { Authorization: jwtToken } }).then((result) => {
+            alert(result.data.message)
+            getCartItems();
+
+        })
+    }
+
     return (
         <div>
             <StudentNavBar />
             <div className="container-fluid">
                 <div className="row justify-content-center">
                     <h2 className="text-center cart-title"><span className="first-letter">M</span>Y <span className="first-letter">C</span>ART</h2>
-
-                    <div className="col-12 text-center mt-4">
+                    {(cartItems.length > 0) ? <div className="col-12 text-center mt-4">
                         <table className="table">
                             <thead>
                                 <tr>
@@ -20,29 +69,22 @@ function Cart() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><img style={{width:"6rem",height:"4rem"}} src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" alt="" /></td>
-                                    <td><button type="button" className="btn btn-outline-primary">-</button><span style={{fontSize :"larger",fontWeight:"bold",marginLeft:"3%",marginRight:"3%"}}> 1 </span><button type="button" className="btn btn-outline-primary">+</button></td>
-                                    <td><button type="button" className="btn btn-danger">Remove</button></td>
-                                </tr>
-                                <tr>
-                                    <td><img style={{width:"6rem",height:"4rem"}} src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" alt="" /></td>
-                                    <td><button type="button" className="btn btn-outline-primary">-</button><span style={{fontSize :"larger",fontWeight:"bold",marginLeft:"3%",marginRight:"3%"}}> 1 </span><button type="button" className="btn btn-outline-primary">+</button></td>
-                                    <td><button type="button" className="btn btn-danger">Remove</button></td>
-                                </tr>
-                                <tr>
-                                    <td><img style={{width:"6rem",height:"4rem"}} src="https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?fit=crop&w=2134&q=100" alt="" /></td>
-                                    <td><button type="button" className="btn btn-outline-primary">-</button><span style={{fontSize :"larger",fontWeight:"bold",marginLeft:"3%",marginRight:"3%"}}> 1 </span><button type="button" className="btn btn-outline-primary">+</button></td>
-                                    <td><button type="button" className="btn btn-danger">Remove</button></td>
-                                </tr>
+                                {cartItems.map((rowData) => (
+                                    <tr>
+                                        <td><img style={{ width: "6rem", height: "4rem", objectFit: "contain" }} src={baseUrl + '/images/' + rowData.equipment.filename} alt={rowData.equipment.filename} /></td>
+                                        <td><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(-1, rowData.equipment._id)}>-</button><span style={{ fontSize: "larger", fontWeight: "bold", marginLeft: "3%", marginRight: "3%" }}> {rowData.quantity} </span><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(1, rowData.equipment._id)}>+</button></td>
+                                        <td><button type="button" className="btn btn-danger" onClick={() => deleteItem(rowData._id)}>Remove</button></td>
+                                    </tr>
+                                ))}
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td><button type="button" className="btn cart-confirm-btn">Confirm</button></td>
+                                    <td><button type="button" className="btn cart-confirm-btn" onClick={confirmOrder}>Confirm</button></td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h4 className='text-center' style={{ marginTop: "10%" }}>Your cart is empty.</h4>)}
+
                 </div>
             </div>
         </div>

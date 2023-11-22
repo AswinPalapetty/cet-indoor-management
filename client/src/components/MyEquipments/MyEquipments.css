@@ -1,0 +1,19 @@
+.my-equipments-title .first-letter {
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+@media only screen and (min-width : 767px){
+    .my-equipments-title{
+        margin-top: 8%;
+    }
+    
+}
+
+@media only screen and (max-width : 768px){
+    .my-equipments-title{
+        margin-top: 13%;
+    }
+    
+}

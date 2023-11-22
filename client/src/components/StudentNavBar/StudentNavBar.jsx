@@ -1,23 +1,31 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './StudentNavBar.css'
 import cet_emblem_white1 from "../../images/cet_emblem_white1.png"
 import { useNavigate } from 'react-router-dom'
 import { studentContext } from '../../contexts/StudentContext'
 import Cookies from 'universal-cookie'
 import { cartContext } from '../../contexts/CartContext'
+import axios from '../../utilities/Axios'
 
 function StudentNavBar() {
   const navigate = useNavigate()
   const { student, setStudent } = useContext(studentContext)
   const [badminton, setBadminton] = useState(false)
-  const { cartLength } = useContext(cartContext)
+  const { cartLength,setCartLength } = useContext(cartContext)
 
   const cookies = new Cookies()
+  const jwtToken = cookies.get("jwt_authorization")
 
   // Get the current date
   const today = new Date();
   // Format the date as needed
   const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+
+  useEffect(() => {
+    axios.get('/student/getCartItems', { headers: { Authorization: jwtToken } }).then((result) => {
+      setCartLength(result.data.cartData.length);
+    })
+  }, [])
 
   //Logout button
   const Logout = () => {
@@ -71,7 +79,7 @@ function StudentNavBar() {
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" href="#">My Activities</a>
+                <a className="nav-link" onClick={()=>navigate('/student/myEquipments')}>My Equipments</a>
               </li>
 
 

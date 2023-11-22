@@ -4,26 +4,38 @@ import StudentNavBar from '../StudentNavBar/StudentNavBar'
 import { baseUrl } from '../../utilities/Constants'
 import axios from '../../utilities/Axios'
 import { cartContext } from '../../contexts/CartContext'
+import Cookies from 'universal-cookie'
+import {studentContext} from '../../contexts/StudentContext'
 
 function Equipments() {
     const [equipments, setEquipments] = useState([]);
-    const { cartItems, setCartItems,cartLength,setCartLength } = useContext(cartContext);
+    const { cartLength,setCartLength } = useContext(cartContext);
+    const cookies = new Cookies();
+    const {student} = useContext(studentContext);
 
     useEffect(() => {
+        const jwtToken = cookies.get("jwt_authorization")
         axios.get('/student/getEquipments').then((result) => {
-            setEquipments(result.data.equipments)
-
-            for (const key in result.data.equipments) {
-                const newItem = cartItems[result.data.equipments[key].equipment] = [0, result.data.equipments[key]._id]
-                setCartItems({ ...cartItems, newItem })
-            }
-            
+            setEquipments(result.data.equipments)          
         })
+        
+        // axios.get('/student/getCartItems',{headers:{Authorization:jwtToken}}).then((result)=>{
+        //     console.log(result.data.cartData.length);
+        //     setCartLength(result.data.cartData.length);
+        //     //setCartItems(result.data.cartData)
+        // })
     }, [])
 
-    const addToCart = (equipment) => {
-        cartItems[equipment][0] = cartItems[equipment][0] + 1
-        setCartLength(cartLength+1)
+    const addToCart = (equipmentId,userId) => {
+        axios.post('/student/addToCart',{equipmentId,userId}).then((result)=>{
+            if(result.data.cartItem){
+                setCartLength(cartLength+1)
+                alert(result.data.message)
+            }
+            else{
+                alert(result.data.message)
+            }
+        })
     }
 
     return (
@@ -35,9 +47,6 @@ function Equipments() {
 
                     {equipments ? equipments.map((rowData) => (
                             <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 text-center mt-4">
-
-                                {/* Here we add each equipment to cartItems to keep track of cart items*/}
-
                                 <div className="card" style={{ width: "19rem", height: "20rem" }}>
                                     <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} style={{ height: "40%", objectFit: "contain" }} />
                                     <div className="card-body">
@@ -46,7 +55,7 @@ function Equipments() {
                                             {parseInt(rowData.stock, 10) > 0 ? <small className='text-success'>In Stock</small> : <small className='text-danger'>Out of Stock</small>}<br />
                                             <small className='text-primary-emphasis'><i>Availability : {rowData.stock}</i></small>
                                         </p>
-                                        <button type='submit' className="submit btn" onClick={() => addToCart(rowData.equipment)}>Add to Cart</button>
+                                        <button type='submit' className="submit btn" onClick={() => addToCart(rowData._id,student._id)}>Add to Cart</button>
                                     </div>
                                 </div>
                             </div>

@@ -18,6 +18,7 @@ import GymAttendance from './components/Attendance/GymAttendance'
 import ManageEquipments from './components/ManageEquipments/ManageEquipments'
 import ManageSlots from './components/ManageSlots/ManageSlots'
 import ManageAnnouncements from './components/ManageAnnouncements/ManageAnnouncements'
+import MyEquipments from './components/MyEquipments/MyEquipments';
 
 function App() {
   const {student} = useContext(studentContext)
@@ -38,6 +39,7 @@ function App() {
         <Route path='staff/equipments' element={staff ? <ManageEquipments /> : <StaffLogin />} />
         <Route path='staff/slots' element={staff ? <ManageSlots /> : <StaffLogin />} />
         <Route path='staff/announcements' element={staff ? <ManageAnnouncements /> : <StaffLogin />} />
+        <Route path='student/myEquipments' element={student ? <MyEquipments /> : <StudentLogin />}/>
       </Routes>
     </div>
   );
