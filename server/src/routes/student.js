@@ -1,5 +1,5 @@
 import express from "express"
-import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, studentLogin, studentSignup, updateCartQuantity } from "../../helpers/student-helpers.js";
+import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, getPaymentGateway, makePayment, studentLogin, studentSignup, updateCartQuantity } from "../../helpers/student-helpers.js";
 import { studentAuth } from "../../middlewares/studentAuth.js";
 var router = express.Router();
 
@@ -91,5 +91,25 @@ router.get('/orders', studentAuth, async (req, res) => {
     console.error(error);
   }
 })
+
+router.post("/getPaymentGateway", async (req, res) => {
+	try {
+		const result = await getPaymentGateway(req.body.amount)
+    res.json(result);
+	} catch (error) {
+		res.json({ message: "Internal Server Error!" });
+		console.log(error);
+	}
+});
+
+router.post("/makePayment", studentAuth, async (req, res) => {
+	try {
+    console.log("reached");
+    const result = makePayment(req.body);
+    res.json(result)
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 export default router;

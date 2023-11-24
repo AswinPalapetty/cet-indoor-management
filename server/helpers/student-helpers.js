@@ -5,6 +5,9 @@ import equipmentsModel from "../models/equipmentsModel.js";
 import cartModel from "../models/cartModel.js";
 import mongoose from "mongoose";
 import orderModel from "../models/orderModel.js";
+import razorpay from "razorpay";
+import { createHash, createHmac, randomBytes } from 'node:crypto';
+import Razorpay from "razorpay";
 
 const saltRounds = 10; //for password hashing
 
@@ -124,19 +127,53 @@ export const deleteItem = async (itemId) => {
 
 export const confirmOrder = async (order) => {
     try {
-        order.student = new mongoose.Types.ObjectId(order.student)
+        order.student = new mongoose.Types.ObjectId(order.student);
         if (order.student.equals(order.user)) {
             delete order.user;
-            const orderDetails = await new orderModel({ equipments: order.cartItems, student: order.student }).save();
-            if (orderDetails) {
-                for (const item of order.cartItems) {
-                    await cartModel.deleteOne({ equipment: item.equipment });
+
+            // Validate each item in the order
+            let validOrder = true;
+
+            for (const item of order.cartItems) {
+                const equipment = await equipmentsModel.findById(item.equipment);
+
+                if (equipment && item.quantity <= parseInt(equipment.stock)) {
+                    continue;
                 }
-                return { orderDetails, message: "Equipments rented successfully. You can now collect the equipments from indoor court office" }
+                else {
+                    validOrder = false;
+                    break;
+                }
+            }
+
+            if (validOrder) {
+
+                // Create a new order with the given cart items and student
+                const orderDetails = await new orderModel({ equipments: order.cartItems, student: order.student }).save();
+
+                if (orderDetails) {
+                    for (const item of order.cartItems) {
+
+                        await equipmentsModel.findByIdAndUpdate(
+                            item.equipment,
+                            { $inc: { stock: -item.quantity } }, // Decrease the stock by item.quantity
+                            { new: true } // Return the updated document
+                        );
+
+                        await cartModel.deleteOne({ equipment: item.equipment });
+                    }
+                    return { orderDetails, message: "Equipments rented successfully. You can now collect the equipments from indoor court office." }
+                }
+                else {
+                    return { orderDetails: null, message: "Equipments renting failed." }
+                }
+
             }
             else {
-                return { orderDetails: null, message: "Equipments renting failed." }
+                // Return error message for invalid order
+                return { orderDetails: null, message: "Invalid order: Quantity exceeds stock or equipment not found" };
             }
+
         }
         else {
             return { orderDetails: null, message: "User not found." }
@@ -195,13 +232,61 @@ export const updateCartQuantity = async (equipmentId, quantity, user) => {
         const equipment = await equipmentsModel.findById(equipmentId);
         const cart = await cartModel.findOne({ equipment: equipmentId })
         if (cart.quantity + quantity < 1)
-            return { status: false }
+            return { status: false, message: "Quantity can't go below 1" }
         if (equipment.stock < cart.quantity + quantity)
             return { status: false, message: `Only ${equipment.stock} left!!!` }
         const updatedCart = await cart.updateOne({ $inc: { quantity } }, { new: true })
-        return { status: true, message: "Quantity updated."}
+        return { status: true, message: "Quantity updated." }
 
     } catch (error) {
         throw error;
     }
+}
+
+export const getPaymentGateway = (amount) => {
+    try {
+        const instance = new Razorpay({
+            key_id: process.env.KEY_ID,
+            key_secret: process.env.KEY_SECRET,
+        });
+
+        const options = {
+            amount: amount,
+            currency: "INR",
+            receipt: createHash('sha256').update(randomBytes(10)).digest('hex').substring(0, 10),
+        };
+
+        return new Promise((resolve, reject) => {
+            instance.orders.create(options, function (error, order) {
+              if (error) {
+                console.log(error);
+                reject({ order: null, message: 'Something Went Wrong!' });
+              } else {
+                resolve({ order, message: 'Success' });
+              }
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const makePayment = (data) => {
+    try {
+		const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data;
+		const sign = razorpay_order_id + "|" + razorpay_payment_id;
+		const expectedSign = createHmac("sha256", process.env.KEY_SECRET)
+			.update(sign.toString())
+			.digest("hex");
+
+		if (razorpay_signature === expectedSign) {
+			return res.json({ message: "Payment verified successfully" });
+		} else {
+			return res.json({ message: "Invalid signature sent!" });
+		}
+	} catch (error) {
+		res.json({ message: "Internal Server Error!" });
+		throw error;
+	}
 }

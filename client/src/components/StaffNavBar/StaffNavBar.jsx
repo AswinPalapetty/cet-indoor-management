@@ -56,6 +56,10 @@ function StaffNavBar() {
                 <a className="nav-link" aria-current="page" onClick={() => navigate('/staff/announcements')}>Announcements</a>
               </li>
 
+              <li className="nav-item">
+                <a className="nav-link" aria-current="page" onClick={() => navigate('/staff/rentals')}>Manage Rentals</a>
+              </li>
+
               {/* <li className="nav-item">
               <a className="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
             </li> */}

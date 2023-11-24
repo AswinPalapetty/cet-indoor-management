@@ -1,6 +1,7 @@
 import express from "express";
-import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment} from "../../helpers/staff-helpers.js"
+import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment, getOrders} from "../../helpers/staff-helpers.js"
 import multer from "multer"
+import { staffAuth } from "../../middlewares/staffAuth.js";
 var router = express.Router()
 
 //multer middleware for fileupload
@@ -119,6 +120,15 @@ router.get('/getEquipments', async (req,res)=>{
     try {
         const result = await getEquipments();
         res.json(result);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.get('/orders',staffAuth, async (req,res)=>{
+    try {
+        const result = await getOrders();
+        res.json(result)
     } catch (error) {
         console.error(error);
     }

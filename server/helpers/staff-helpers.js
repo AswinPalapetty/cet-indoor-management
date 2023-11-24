@@ -2,12 +2,18 @@ import staffModel from "../models/staffModel.js";
 import studentModel from '../models/studentModel.js';
 import AttendanceModel from '../models/AttendanceModel.js'
 import equipmentsModel from '../models/equipmentsModel.js'
+import orderModel from '../models/orderModel.js'
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 import fs from "fs";
 import mongoose from "mongoose";
 
 const saltRounds = 10; //for password hashing
+
+export const getStaff = async (userId) => {
+    const staff = await staffModel.findById(userId);
+    return staff;
+}
 
 export const staffSignup = async (staffData) => {
     try {
@@ -216,5 +222,67 @@ export const getEquipments = async () => {
     }
     catch (error) {
         throw error;
+    }
+}
+
+export const getOrders = async () => {
+    try {
+        const orders = await orderModel.aggregate([
+            {
+                $match: {
+                    "equipments.status": "In hand"
+                }
+            },
+            {
+                $unwind: "$equipments" //array in collection order
+            },
+            {
+                $lookup: {
+                    from: "equipments", // collection
+                    localField: "equipments.equipment", //equipment id in array named equipments
+                    foreignField: "_id",
+                    as: "equipmentData"
+                }
+            },
+            {
+                $unwind: "$equipmentData"
+            },
+            {
+                $lookup: {
+                    from: "students",
+                    localField: "student",
+                    foreignField: "_id",
+                    as: "studentData"
+                }
+            },
+            {
+                $unwind: "$studentData"
+            },
+            {
+                $project: {
+                    quantity: "$equipments.quantity",
+                    fine: "$equipments.fine",
+                    dueDate: "$equipments.dueDate",
+                    status: "$equipments.status",
+                    orderDate: "$createdAt",
+                    equipment: {
+                        _id: "$equipments.equipment",
+                        equipment: "$equipmentData.equipment",
+                        stock: "$equipmentData.stock",
+                        filename: "$equipmentData.filename"
+                    },
+                    student: {
+                        name: "$studentData.name",
+                        admission: "$studentData.admission",
+                        mobile: "$studentData.mobile",
+                        email: "$studentData.email"
+                    }
+                }
+            }
+        ])
+        return orders;
+
+    } catch (error) {
+        throw (error);
     }
 }

@@ -6,9 +6,11 @@ import Cookies from 'universal-cookie'
 import { baseUrl } from '../../utilities/Constants'
 import ClipLoader from "react-spinners/ClipLoader";
 import { cartContext } from '../../contexts/CartContext'
+import { useNavigate } from 'react-router-dom'
 
 function Cart() {
     const cookies = new Cookies();
+    const navigate = useNavigate()
     const { cartLength, setCartLength } = useContext(cartContext)
     const [cartItems, setCartItems] = useState([])
     const [loading, setLoading] = useState(true)
@@ -47,9 +49,8 @@ function Cart() {
 
     const confirmOrder = () => {
         axios.post('/student/confirmOrder', { cartItems: cartItems.map((cartItem) => ({ equipment: cartItem.equipment._id, quantity: cartItem.quantity })), student: cartItems[0].user }, { headers: { Authorization: jwtToken } }).then((result) => {
-            alert(result.data.message)
-            getCartItems();
-
+            alert(result.data.message);
+            navigate('/student/myEquipments');
         })
     }
 
