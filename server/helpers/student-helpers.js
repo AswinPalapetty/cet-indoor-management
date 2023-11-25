@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 import equipmentsModel from "../models/equipmentsModel.js";
 import cartModel from "../models/cartModel.js";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import orderModel from "../models/orderModel.js";
 import razorpay from "razorpay";
 import { createHash, createHmac, randomBytes } from 'node:crypto';
@@ -243,27 +243,32 @@ export const updateCartQuantity = async (equipmentId, quantity, user) => {
     }
 }
 
-export const getPaymentGateway = (amount) => {
+export const makePayment = async (studentId, orderId, equipmentId) => {
+    const order = await orderModel.findOne({ _id: new mongoose.Types.ObjectId(orderId), student: new mongoose.Types.ObjectId(studentId), equipments: { $elemMatch: { equipment: new mongoose.Types.ObjectId(equipmentId), status: 'In hand', fine: { $gt: 0 } } } }).populate('equipments');
+    if (!order) {
+        console.log('Item not found!')
+        return { order: null, error: 'Equipment not found.' }
+    }
     try {
+        const options = {
+            amount: order.equipments.find((equipment) => equipment.equipment.toString() === equipmentId).fine * 100,
+            currency: "INR",
+            receipt: `${orderId}-${order.equipments.findIndex((equipment) => equipment.equipment.toString() === equipmentId)}`,
+        };
+
         const instance = new Razorpay({
             key_id: process.env.KEY_ID,
             key_secret: process.env.KEY_SECRET,
         });
 
-        const options = {
-            amount: amount,
-            currency: "INR",
-            receipt: createHash('sha256').update(randomBytes(10)).digest('hex').substring(0, 10),
-        };
-
         return new Promise((resolve, reject) => {
             instance.orders.create(options, function (error, order) {
-              if (error) {
-                console.log(error);
-                reject({ order: null, message: 'Something Went Wrong!' });
-              } else {
-                resolve({ order, message: 'Success' });
-              }
+                if (error) {
+                    console.log(error);
+                    reject({ order: null, message: 'Something Went Wrong!' });
+                } else {
+                    resolve({ order, message: 'Success' });
+                }
             });
         });
 
@@ -272,21 +277,58 @@ export const getPaymentGateway = (amount) => {
     }
 }
 
-export const makePayment = (data) => {
+export const verifySignature = async (userId, razorpayOrderId, razorpayPaymentId, razorpaySignature) => {
     try {
-		const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data;
-		const sign = razorpay_order_id + "|" + razorpay_payment_id;
-		const expectedSign = createHmac("sha256", process.env.KEY_SECRET)
-			.update(sign.toString())
-			.digest("hex");
+        const sign = razorpayOrderId + "|" + razorpayPaymentId;
+        const expectedSign = createHmac("sha256", process.env.KEY_SECRET)
+            .update(sign.toString())
+            .digest("hex");
 
-		if (razorpay_signature === expectedSign) {
-			return res.json({ message: "Payment verified successfully" });
-		} else {
-			return res.json({ message: "Invalid signature sent!" });
-		}
-	} catch (error) {
-		res.json({ message: "Internal Server Error!" });
-		throw error;
-	}
+        const instance = new Razorpay({
+            key_id: process.env.KEY_ID,
+            key_secret: process.env.KEY_SECRET,
+        });
+
+
+        if (razorpaySignature === expectedSign) {
+            const razorpayOrder = await instance.orders.fetch(razorpayOrderId)
+            const order = await orderModel.findOne({ _id: new mongoose.Types.ObjectId(razorpayOrder.receipt.split('-')[0]), student: new mongoose.Types.ObjectId(userId) })
+            if (!order)
+                return { error: 'Order not found' }
+            order.equipments[Number(razorpayOrder.receipt.split('-')[1])].finePaidDate = new Date();
+            order.equipments[Number(razorpayOrder.receipt.split('-')[1])].status = 'returned';
+            await order.save()
+            return { message: "Payment verified successfully" };
+        } else {
+            return { message: "Invalid signature sent!" };
+        }
+    } catch (error) {
+        return { message: "Internal Server Error!" };
+    }
+}
+
+export const updateOrderFine = async () => {
+    let today = new Date(new Date().setHours(0, 0, 0, 0));
+    today = new Date(today.setDate(today.getDate() + 1));
+    const result = await orderModel.updateMany({ equipments: { $elemMatch: { dueDate: { $lt: today }, status: 'In hand' } } }, [
+        {
+            $addFields: {
+                'equipments': {
+                    $map: {
+                        input: '$equipments',
+                        as: 'equipment',
+                        in: {
+                            $mergeObjects: [
+                                '$$equipment',
+                                {
+                                    'fine': { $add: ['$$equipment.fine', { $multiply: ['$$equipment.quantity', 5] }] }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]);
+    console.log('Updated orders fine');
 }

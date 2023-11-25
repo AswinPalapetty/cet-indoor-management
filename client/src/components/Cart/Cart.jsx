@@ -22,14 +22,14 @@ function Cart() {
     }, [])
 
     const getCartItems = async () => {
-        const { data } = await axios.get('/student/getCartItems', { headers: { Authorization: jwtToken } });
+        const { data } = await axios.get('/student/getCartItems', { headers: { Authorization: `Bearer ${jwtToken}` } });
         setCartLength(data.cartData.length)
         setCartItems(data.cartData)
         setLoading(false);
     }
 
     const deleteItem = (cartItemId) => {
-        axios.post('/student/deleteItem', { cartItemId }, { headers: { Authorization: jwtToken } }).then((result) => {
+        axios.post('/student/deleteItem', { cartItemId }, { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
             alert("Equipment removed from cart.")
             setCartLength(cartLength - 1)
             getCartItems();
@@ -37,7 +37,7 @@ function Cart() {
     }
 
     const changeQuantity = (quantity, equipmentId) => {
-        axios.put('/student/updateQuantity/' + equipmentId, { quantity }, { headers: { Authorization: jwtToken } }).then(async (result) => {
+        axios.put('/student/updateQuantity/' + equipmentId, { quantity }, { headers: { Authorization: `Bearer ${jwtToken}` } }).then(async (result) => {
             if (result.data.status) {
                 getCartItems();
             }
@@ -48,7 +48,7 @@ function Cart() {
     }
 
     const confirmOrder = () => {
-        axios.post('/student/confirmOrder', { cartItems: cartItems.map((cartItem) => ({ equipment: cartItem.equipment._id, quantity: cartItem.quantity })), student: cartItems[0].user }, { headers: { Authorization: jwtToken } }).then((result) => {
+        axios.post('/student/confirmOrder', { cartItems: cartItems.map((cartItem) => ({ equipment: cartItem.equipment._id, quantity: cartItem.quantity })), student: cartItems[0].user }, { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
             alert(result.data.message);
             navigate('/student/myEquipments');
         })

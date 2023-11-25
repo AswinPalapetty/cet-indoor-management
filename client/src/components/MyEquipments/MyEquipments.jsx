@@ -13,24 +13,25 @@ function MyEquipments() {
     const jwtToken = cookies.get("jwt_authorization")
 
     useEffect(() => {
-        axios.get('/student/orders', { headers: { Authorization: jwtToken } }).then((result) => {
-            console.log(result.data);
+        axios.get('/student/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
             setOrders(result.data)
             setLoading(false)
         })
     }, [])
 
-    const initPayment = (order) => {
+    const verifySignature = (order) => {
         const options = {
             key: process.env.REACT_APP_KEY_ID,
-            amount: order.amount*100,
+            amount: order.amount * 100,
             currency: order.currency,
             description: "Fine Payment",
             order_id: order.id,
             handler: async (response) => {
                 try {
-                    const result = await axios.post('/student/makePayment', { headers: { Authorization: jwtToken } }, response);
-                    console.log(result);
+                    const result = await axios.post('/student/verifySignature', response, { headers: { Authorization: `Bearer ${jwtToken}` } }, response);
+                    axios.get('/student/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+                        setOrders(result.data)
+                    })         
                 } catch (error) {
                     console.log(error);
                 }
@@ -44,11 +45,11 @@ function MyEquipments() {
         rzp1.open();
     }
 
-    const payFine = async (fine) => {
+    const payFine = async (orderId, equipmentId) => {
         try {
-            const { data } = await axios.post('/student/getPaymentGateway', { amount: fine });
+            const { data } = await axios.post('/student/makePayment', { orderId, equipmentId }, { headers: { Authorization: `Bearer ${jwtToken}` } });
             if (data.order) {
-                initPayment(data.order);
+                verifySignature(data.order);
             }
             else {
                 alert(data.message)
@@ -85,7 +86,7 @@ function MyEquipments() {
                                         <td style={{ color: "red" }}>{item.dueDate}</td>
                                         {item.fine > 0 ? <td style={{ color: "red" }}>{item.fine}</td> : <td style={{ color: "green" }}>{item.fine}</td>}
                                         <td>{item.status}</td>
-                                        {item.fine !== 0 && <td><button className='btn btn-danger' onClick={() => payFine(item.fine)}>Pay Fine</button></td>}
+                                        {(item.fine > 0 && item.status === "In hand" ) ? <td><button className='btn btn-danger' onClick={() => payFine(item._id, item.equipment._id)}>Pay Fine</button></td> : <td></td>}
                                     </tr>)
                                 })}
                             </thead>

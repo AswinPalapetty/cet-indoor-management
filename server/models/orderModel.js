@@ -16,16 +16,19 @@ const equipmentSchema = new mongoose.Schema({
     },
     dueDate: {
         type: Date,
-        default: function () {
-            const currentDate = new Date();
-            currentDate.setDate(currentDate.getDate() + 5); // Adding 5 days
-            return currentDate;
+        default: () => {
+            const currentDate = new Date(new Date().setHours(0, 0, 0, 0))
+            return currentDate.setDate(currentDate.getDate() + 5)
         }
     },
+    finePaidDate: {
+        type: Date,
+        required: false
+    },
     status: {
-        type : String,
-        enum : ['In hand','returned'],
-        default : 'In hand'
+        type: String,
+        enum: ['In hand', 'returned'],
+        default: 'In hand'
     }
 }, { _id: false })
 

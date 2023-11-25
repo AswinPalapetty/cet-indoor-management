@@ -1,5 +1,5 @@
 import express from "express"
-import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, getPaymentGateway, makePayment, studentLogin, studentSignup, updateCartQuantity } from "../../helpers/student-helpers.js";
+import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, makePayment, verifySignature, studentLogin, studentSignup, updateCartQuantity } from "../../helpers/student-helpers.js";
 import { studentAuth } from "../../middlewares/studentAuth.js";
 var router = express.Router();
 
@@ -65,7 +65,7 @@ router.post('/deleteItem', studentAuth, async (req, res) => {
 
 router.put('/updateQuantity/:equipmentId', studentAuth, async (req, res) => {
   try {
-    const result = await updateCartQuantity(req.params.equipmentId, req.body.quantity,req.student._id);
+    const result = await updateCartQuantity(req.params.equipmentId, req.body.quantity, req.student._id);
     console.log(result);
     res.json(result)
   } catch (error) {
@@ -92,20 +92,19 @@ router.get('/orders', studentAuth, async (req, res) => {
   }
 })
 
-router.post("/getPaymentGateway", async (req, res) => {
-	try {
-		const result = await getPaymentGateway(req.body.amount)
+router.post("/makePayment", studentAuth, async (req, res) => {
+  try {
+    const result = await makePayment(req.student._id, req.body.orderId, req.body.equipmentId)
     res.json(result);
-	} catch (error) {
-		res.json({ message: "Internal Server Error!" });
-		console.log(error);
-	}
+  } catch (error) {
+    res.json({ message: "Internal Server Error!" });
+    console.log(error);
+  }
 });
 
-router.post("/makePayment", studentAuth, async (req, res) => {
-	try {
-    console.log("reached");
-    const result = makePayment(req.body);
+router.post("/verifySignature", studentAuth, async (req, res) => {
+  try {
+    const result = await verifySignature(req.student._id, req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature);
     res.json(result)
   } catch (error) {
     console.error(error);

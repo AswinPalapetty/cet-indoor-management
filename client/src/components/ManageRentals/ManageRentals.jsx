@@ -13,7 +13,7 @@ function ManageRentals() {
     const jwtToken = cookies.get("jwt_staff_authorization")
 
     useEffect(() => {
-        axios.get('/staff/orders', { headers: { Authorization: jwtToken } }).then((result) => {
+        axios.get('/staff/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
             console.log(result);
             setOrders(result.data)
             setLoading(false)

@@ -22,7 +22,7 @@ function StudentNavBar() {
   const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
   useEffect(() => {
-    axios.get('/student/getCartItems', { headers: { Authorization: jwtToken } }).then((result) => {
+    axios.get('/student/getCartItems', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
       setCartLength(result.data.cartData.length);
     })
   }, [])
