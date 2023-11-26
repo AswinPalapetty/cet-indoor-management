@@ -298,6 +298,9 @@ export const verifySignature = async (userId, razorpayOrderId, razorpayPaymentId
             order.equipments[Number(razorpayOrder.receipt.split('-')[1])].finePaidDate = new Date();
             order.equipments[Number(razorpayOrder.receipt.split('-')[1])].status = 'returned';
             await order.save()
+            const equipment = await equipmentsModel.findById(order.equipments[Number(razorpayOrder.receipt.split('-')[1])].equipment)
+            const newStock = equipment.stock + order.equipments[Number(razorpayOrder.receipt.split('-')[1])].quantity
+            await equipmentsModel.findByIdAndUpdate(order.equipments[Number(razorpayOrder.receipt.split('-')[1])].equipment, {stock : newStock},{new : true})
             return { message: "Payment verified successfully" };
         } else {
             return { message: "Invalid signature sent!" };

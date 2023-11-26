@@ -286,3 +286,11 @@ export const getOrders = async () => {
         throw (error);
     }
 }
+
+export const updateAttendanceStatus = async () => {
+    const attendance = await AttendanceModel.find({ today: true })
+    attendance.map( async (student) => {
+        await student.updateOne({today : false})
+    })
+    console.log("attendance status updated");
+}
