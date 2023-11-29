@@ -8,6 +8,8 @@ import JWT from "jsonwebtoken";
 import fs from "fs";
 import mongoose from "mongoose";
 import announcementModel from "../models/announcementModel.js";
+import { createTransport } from 'nodemailer';
+import Mailgen from 'mailgen';
 
 const saltRounds = 10; //for password hashing
 
@@ -290,8 +292,8 @@ export const getOrders = async () => {
 
 export const updateAttendanceStatus = async () => {
     const attendance = await AttendanceModel.find({ today: true })
-    attendance.map( async (student) => {
-        await student.updateOne({today : false})
+    attendance.map(async (student) => {
+        await student.updateOne({ today: false })
     })
     console.log("attendance status updated");
 }
@@ -342,4 +344,128 @@ export const deleteAnnouncement = async (announcementData) => {
     } catch (error) {
         throw error;
     }
+}
+
+export const sendEmail = async () => {
+    const result = await orderModel.aggregate([
+        {
+            $unwind: "$equipments"
+        },
+        {
+            $match: {
+                "equipments.fine": { $gt: 0 },
+                "equipments.status": "In hand"
+            }
+        },
+        {
+            $lookup: {
+                from: "equipments",
+                localField: "equipments.equipment",
+                foreignField: "_id",
+                as: "equipmentData"
+            }
+        },
+        {
+            $unwind: "$equipmentData"
+        },
+        {
+            $lookup: {
+                from: "students",
+                localField: "student",
+                foreignField: "_id",
+                as: "studentData"
+            }
+        },
+        {
+            $unwind: "$studentData"
+        },
+        {
+            $lookup: {
+                from: "equipments", // Assuming the equipment collection name
+                localField: "equipments.equipment",
+                foreignField: "_id",
+                as: "equipmentDetails"
+            }
+        },
+        {
+            $unwind: "$equipmentDetails"
+        },
+        {
+            $project: {
+                quantity: "$equipments.quantity",
+                fine: "$equipments.fine",
+                status: "$equipments.status",
+                dueDate: "$equipments.dueDate",
+                student: {
+                    _id: "$studentData._id",
+                    name: "$studentData.name", // Replace with the actual field in your student schema
+                    admission: "$studentData.admission", // Replace with the actual field in your student schema
+                    mobile: "$studentData.mobile", // Replace with the actual field in your student schema
+                    email: "$studentData.email" // Replace with the actual field in your student schema
+                },
+                equipment: {
+                    name: "$equipmentDetails.equipment", // Replace with the actual field in your equipment schema
+                }
+            }
+        }
+    ]);
+
+    result.map(async (order) => {
+        const email = order.student.email;
+
+        let config = {
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.PASSWORD
+            }
+        }
+
+        let transporter = createTransport(config);
+
+        let MailGenerator = new Mailgen({
+            theme: "salted",
+            product: {
+                name: "CET trivandrum",
+                link: 'https://www.cet.ac.in/',
+                logo: 'https://www.cet.ac.in/wp-content/uploads/2018/09/cropped-CET-Emblom-transparent-2-e1536389478507.png'
+            }
+        })
+
+        let response = {
+            body: {
+                name: order.student.name,
+                intro: "Your pending fine payments",
+                table: {
+                    data: [
+                        {
+                            item: order.equipment.name,
+                            Quantity: order.quantity,
+                            Fine: order.fine,
+                        }
+                    ]
+                },
+                outro: "Make your payment as soon as possible and return the items to indoor. Goto : http://localhost:3000/student/myEquipments",
+                signature: false
+            }
+        }
+
+        let mail = MailGenerator.generate(response)
+
+        let message = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Pending Fine",
+            html: mail
+        }
+
+        transporter.sendMail(message).then(() => {
+            console.log("successfull email");
+        }).catch(error => {
+            console.log("email  error : "+error);
+        })
+
+    })
+
+
 }
