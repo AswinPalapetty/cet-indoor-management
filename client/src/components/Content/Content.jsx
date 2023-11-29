@@ -1,5 +1,6 @@
 import React from 'react'
 import './Content.css'
+import indoor2 from '../../images/indoorout2.jpg'
 
 function Content() {
     return (
@@ -8,7 +9,7 @@ function Content() {
                 <h2 className="text-center title"><span className="first-letter">I</span>NDOOR <span className="first-letter">S</span>PORTS<span className="first-letter"> H</span>UB</h2>
                 <div className="row mt-3">
                     <div className="col-md-6 mb-4">
-                        <img src="https://images.unsplash.com/photo-1579033461380-adb47c3eb938?fit=crop&w=1964&q=100" alt="About" width="100%" className="rounded" />
+                        <img src={indoor2} alt="About" width="100%" className="rounded" />
                     </div>
                     <div className="col-md-6 mb-4 text-muted" style={{ fontSize: "15px" }}>
                         <div><span style={{ fontWeight: "600" }}>The Indoor Court Management System</span> is a transformative solution designed to streamline and modernize the management of our college's indoor sports facilities.</div>

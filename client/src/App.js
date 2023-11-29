@@ -20,6 +20,7 @@ import ManageSlots from './components/ManageSlots/ManageSlots'
 import ManageAnnouncements from './components/ManageAnnouncements/ManageAnnouncements'
 import MyEquipments from './components/MyEquipments/MyEquipments';
 import ManageRentals from './components/ManageRentals/ManageRentals';
+import Announcements from './components/Announcements/Announcements';
 
 function App() {
   const { student } = useContext(studentContext)
@@ -39,6 +40,7 @@ function App() {
         <Route path='staff/gymAttendance' element={staff ? <GymAttendance /> : <StaffLogin />} />
         <Route path='staff/equipments' element={staff ? <ManageEquipments /> : <StaffLogin />} />
         <Route path='staff/slots' element={staff ? <ManageSlots /> : <StaffLogin />} />
+        <Route path='student/announcements' element={staff ? <Announcements /> : <StaffLogin />} />
         <Route path='staff/announcements' element={staff ? <ManageAnnouncements /> : <StaffLogin />} />
         <Route path='student/myEquipments' element={student ? <MyEquipments /> : <StudentLogin />} />
         <Route path='staff/rentals' element={staff ? <ManageRentals /> : <StaffLogin />} />

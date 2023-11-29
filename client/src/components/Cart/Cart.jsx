@@ -3,10 +3,11 @@ import './Cart.css'
 import StudentNavBar from '../StudentNavBar/StudentNavBar'
 import axios from '../../utilities/Axios'
 import Cookies from 'universal-cookie'
-import { baseUrl } from '../../utilities/Constants'
 import ClipLoader from "react-spinners/ClipLoader";
 import { cartContext } from '../../contexts/CartContext'
 import { useNavigate } from 'react-router-dom'
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function Cart() {
     const cookies = new Cookies();

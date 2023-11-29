@@ -11,7 +11,8 @@ function StudentNavBar() {
   const navigate = useNavigate()
   const { student, setStudent } = useContext(studentContext)
   const [badminton, setBadminton] = useState(false)
-  const { cartLength,setCartLength } = useContext(cartContext)
+  const { cartLength, setCartLength } = useContext(cartContext)
+  const [announcementsCount, setAnnouncementsCount] = useState(0)
 
   const cookies = new Cookies()
   const jwtToken = cookies.get("jwt_authorization")
@@ -24,6 +25,10 @@ function StudentNavBar() {
   useEffect(() => {
     axios.get('/student/getCartItems', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
       setCartLength(result.data.cartData.length);
+    })
+
+    axios.get('/student/getAnnouncements', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+      setAnnouncementsCount(result.data.announcements.length)
     })
   }, [])
 
@@ -79,18 +84,17 @@ function StudentNavBar() {
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" onClick={()=>navigate('/student/myEquipments')}>My Equipments</a>
+                <a className="nav-link" onClick={() => navigate('/student/myEquipments')}>My Equipments</a>
               </li>
 
 
               <li className="nav-item">
                 <div className="items">
-                  <button type="button" className="btn btn-dark position-relative">
+                  <button type="button" className="btn btn-dark position-relative" onClick={() => navigate('/student/announcements')} >
                     Announcements
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                      99+
+                    {cartLength > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">{cartLength}
                       <span className="visually-hidden">unread messages</span>
-                    </span>
+                    </span>}
                   </button>
                 </div>
               </li>

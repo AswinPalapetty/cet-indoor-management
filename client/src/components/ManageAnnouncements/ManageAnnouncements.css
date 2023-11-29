@@ -1,0 +1,90 @@
+.make-announcement-btn, .make-announcement-btn:hover{
+    border-radius: 5px;
+    border: none;
+    background-color: #4c00b4;
+    width: 200px;
+    height: 45px;
+    color: #fff;
+    font-weight: 500;
+    text-wrap: nowrap;
+}
+
+.announcement-submit-btn,.announcement-submit-btn:hover{
+    border-radius: 5px;
+    border: none;
+    background-color: #4c00b4;
+    width: 95px;
+    height: 38px;
+    color: #fff;
+    font-weight: 500;
+    text-wrap: nowrap;
+}
+
+.announcement-title .first-letter{
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+@media only screen and (min-width : 767px){
+    .announcement-title{
+        margin-top: 8%;
+    }
+
+    .staff-posts{
+        margin-left: 11%;
+        width: 78%;
+    }
+    
+}
+
+@media only screen and (max-width : 768px){
+    .announcement-title{
+        margin-top: 13%;
+    }
+}
+
+.staff-posts {
+    position: relative;
+    background: #eaeaea;;
+    height: 90px;
+    border-radius: 10px;
+    margin-top: 12px;
+    padding: 15px;
+    box-shadow: 5px 5px 10px #aaaaaa;
+    cursor: pointer;
+}
+
+.staff-posts .announcement-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #3c0098;
+    color: #fff;
+    font-size: 20px;
+    padding: 10px 10px;
+    border-radius: 50%;
+}
+
+.staff-posts .staff-posts-body {
+    position: absolute;
+    top: 50%;
+    left: 63px;
+    transform: translateY(-50%);
+}
+
+.staff-posts {
+    display: flex;
+    align-items: center;
+  }
+  
+  .staff-posts .staff-posts-body {
+    flex: 1; /* This will make the staff-posts-body take up the available space */
+  }
+  
+  .staff-posts .fa-trash {
+    font-size: x-large;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 2%;
+  }

@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 import fs from "fs";
 import mongoose from "mongoose";
+import announcementModel from "../models/announcementModel.js";
 
 const saltRounds = 10; //for password hashing
 
@@ -293,4 +294,52 @@ export const updateAttendanceStatus = async () => {
         await student.updateOne({today : false})
     })
     console.log("attendance status updated");
+}
+
+export const getAnnouncements = async () => {
+    try {
+        const announcements = await announcementModel.find({});
+        if (announcements) {
+            return { announcements }
+        }
+        else {
+            return { announcements: [] }
+        }
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export const addAnnouncement = async (announcementData) => {
+    try {
+
+        // Save equipment details
+        const announcement = await new announcementModel({ ...announcementData }).save();
+        return { announcement, message: "New announcement added." };
+
+    }
+    catch (error) {
+        throw error; // Handle or log the error as needed
+    }
+}
+
+export const deleteAnnouncement = async (announcementData) => {
+    try {
+        const filePath = './public/announcements/' + announcementData.filename;
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Error deleting file: ${err}`);
+            } else {
+                console.log(`File deleted: ${filePath}`);
+            }
+        });
+
+        const id = new mongoose.Types.ObjectId(announcementData.id);
+        await announcementModel.findByIdAndDelete(id);
+        const announcements = await getAnnouncements();
+        return { ...announcements, message: "Deleted succcessfully." };
+    } catch (error) {
+        throw error;
+    }
 }

@@ -1,0 +1,85 @@
+.announcement-title .first-letter{
+    color: #3c0098;
+    font-size: 38px;
+    font-weight: 700;
+}
+
+@media only screen and (min-width : 767px){
+    .announcement-title{
+        margin-top: 8%;
+    }
+
+    .posts{
+        margin-left: 11%;
+        width: 78%;
+    }
+    
+}
+
+@media only screen and (max-width : 768px){
+    .announcement-title{
+        margin-top: 13%;
+    }
+}
+
+.posts {
+    position: relative;
+    background: #eaeaea;;
+    height: 90px;
+    border-radius: 10px;
+    margin-top: 12px;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px #aaaaaa;
+}
+
+.posts .announcement-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #3c0098;
+    color: #fff;
+    font-size: 20px;
+    padding: 10px 10px;
+    border-radius: 50%;
+}
+
+.posts .posts-body {
+    position: absolute;
+    top: 50%;
+    left: 63px;
+    transform: translateY(-50%);
+}
+
+.files .card{
+    width: 10rem;
+    height:7rem;
+    cursor: pointer;
+    background: #260160;
+}
+
+.files .card:hover{
+    background: #1b0640;
+}
+
+.card .download-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 23px;
+    color: #fff;
+    cursor: pointer;
+    /* opacity: 0; Initial state */
+    transition: opacity 0.3s ease; 
+    border-radius: 50%; /* Make it circular */
+    background: #7b7272; /* Optional: Add a background color for better visibility */
+    padding: 10px;
+}
+
+.card .download-btn:hover {
+    opacity: 1;
+    font-weight: 900;
+}
+
+    

@@ -24,7 +24,7 @@ app.use(express.json());
 app.use("/student", student);
 app.use("/staff", staff);
 app.use('/images', express.static('./public/images'));
-
+app.use('/announcement-files', express.static('./public/announcements'));
 
 app.listen(process.env.PORT, () => {
     console.log("Server is running.");

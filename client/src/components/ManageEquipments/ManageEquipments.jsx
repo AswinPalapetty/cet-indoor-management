@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import './ManageEquipments.css'
 import StaffNavBar from '../StaffNavBar/StaffNavBar'
 import axios from '../../utilities/Axios'
-import { baseUrl } from '../../utilities/Constants'
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ManageEquipments() {
   const ButtonRef = useRef(null);

@@ -5,7 +5,7 @@ export const staffAuth = async (req, res, next) => {
     if (!req.headers.authorization)
         return res.status(401).json({ message: 'Invalid token' })
 
-    const jwtToken = req.headers.authorization;
+    const jwtToken = req.headers.authorization.split(' ')[1];
     const userId = JWT.decode(jwtToken);
 
     if (!userId)

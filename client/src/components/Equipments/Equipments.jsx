@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './Equipments.css'
 import StudentNavBar from '../StudentNavBar/StudentNavBar'
-import { baseUrl } from '../../utilities/Constants'
 import axios from '../../utilities/Axios'
 import { cartContext } from '../../contexts/CartContext'
 import Cookies from 'universal-cookie'
 import {studentContext} from '../../contexts/StudentContext'
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function Equipments() {
     const [equipments, setEquipments] = useState([]);

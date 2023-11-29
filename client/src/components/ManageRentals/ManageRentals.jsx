@@ -4,7 +4,8 @@ import StaffNavBar from '../StaffNavBar/StaffNavBar'
 import axios from '../../utilities/Axios'
 import Cookies from 'universal-cookie'
 import ClipLoader from "react-spinners/ClipLoader";
-import { baseUrl } from '../../utilities/Constants'
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ManageRentals() {
     const [orders, setOrders] = useState([])
@@ -60,7 +61,7 @@ function ManageRentals() {
                             <tbody>
 
                             </tbody>
-                        </table> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h4 className='text-center' style={{ marginTop: "10%" }}>You haven't rented any equipments.</h4>)}
+                        </table> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h4 className='text-center' style={{ marginTop: "10%" }}>No equipments rented.</h4>)}
                     </div>
                 </div>
             </div>

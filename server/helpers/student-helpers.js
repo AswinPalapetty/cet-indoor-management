@@ -8,6 +8,7 @@ import orderModel from "../models/orderModel.js";
 import razorpay from "razorpay";
 import { createHash, createHmac, randomBytes } from 'node:crypto';
 import Razorpay from "razorpay";
+import announcementModel from "../models/announcementModel.js";
 
 const saltRounds = 10; //for password hashing
 
@@ -334,4 +335,19 @@ export const updateOrderFine = async () => {
         }
     ]);
     console.log('Updated orders fine');
+}
+
+export const getAnnouncements = async () => {
+    try {
+        const announcements = await announcementModel.find({});
+        if (announcements) {
+            return { announcements }
+        }
+        else {
+            return { announcements: [] }
+        }
+    }
+    catch (error) {
+        throw error;
+    }
 }

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import './MyEquipments.css'
 import StudentNavBar from '../StudentNavBar/StudentNavBar'
-import { baseUrl } from '../../utilities/Constants'
 import axios from '../../utilities/Axios'
 import Cookies from 'universal-cookie'
 import ClipLoader from 'react-spinners/ClipLoader'
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function MyEquipments() {
     const [orders, setOrders] = useState([])

@@ -1,5 +1,5 @@
 import express from "express"
-import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, makePayment, verifySignature, studentLogin, studentSignup, updateCartQuantity } from "../../helpers/student-helpers.js";
+import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, makePayment, verifySignature, studentLogin, studentSignup, updateCartQuantity, getAnnouncements } from "../../helpers/student-helpers.js";
 import { studentAuth } from "../../middlewares/studentAuth.js";
 var router = express.Router();
 
@@ -110,5 +110,14 @@ router.post("/verifySignature", studentAuth, async (req, res) => {
     console.error(error);
   }
 });
+
+router.get('/getAnnouncements', studentAuth, async (req,res)=>{
+  try {
+      const result = await getAnnouncements();
+      res.json(result);
+  } catch (error) {
+      console.error(error);
+  }
+})
 
 export default router;

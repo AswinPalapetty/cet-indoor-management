@@ -1,5 +1,5 @@
 import express from "express";
-import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment, getOrders} from "../../helpers/staff-helpers.js"
+import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment, getOrders, addAnnouncement, deleteAnnouncement, getAnnouncements} from "../../helpers/staff-helpers.js"
 import multer from "multer"
 import { staffAuth } from "../../middlewares/staffAuth.js";
 var router = express.Router()
@@ -15,7 +15,18 @@ const storage = multer.diskStorage({
     }
   })
 
+  const announcementStorage = multer.diskStorage({
+    destination: function(req, file, callback) {
+      return callback(null, "./public/announcements")
+    },
+    filename: function (req, file, callback) {
+        req.body.file = file.datetime
+      return callback(null, `${file.originalname}`)
+    }
+  })
+
   const upload = multer({storage})
+  const announcementUpload = multer({storage : announcementStorage})
   //multer ends
 
 router.post('/signup', async (req, res) => {
@@ -129,6 +140,36 @@ router.get('/orders',staffAuth, async (req,res)=>{
     try {
         const result = await getOrders();
         res.json(result)
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.post('/addAnnouncement', staffAuth, announcementUpload.single('file'), async (req,res)=>{
+    try {
+        delete req.body.file;
+        const filename = req.file.originalname;
+        await addAnnouncement({...req.body,filename}).then((result)=>{
+            res.json(result)
+        })
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.post('/deleteAnnouncement', staffAuth,async (req,res)=>{
+    try {
+        const result = await deleteAnnouncement({...req.body});
+        res.json(result)
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.get('/getAnnouncements', staffAuth, async (req,res)=>{
+    try {
+        const result = await getAnnouncements();
+        res.json(result);
     } catch (error) {
         console.error(error);
     }
