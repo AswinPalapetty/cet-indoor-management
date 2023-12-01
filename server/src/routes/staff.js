@@ -1,5 +1,5 @@
 import express from "express";
-import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment, getOrders, addAnnouncement, deleteAnnouncement, getAnnouncements} from "../../helpers/staff-helpers.js"
+import {staffSignup,staffLogin, findStudent, markIndoorAttendance, fetchIndoorAttendance, markGymAttendance, fetchGymAttendance, addEquipment, getEquipments, updateEquipment, deleteEquipment, getOrders, addAnnouncement, deleteAnnouncement, getAnnouncements, bookedSlots, changeStatus} from "../../helpers/staff-helpers.js"
 import multer from "multer"
 import { staffAuth } from "../../middlewares/staffAuth.js";
 var router = express.Router()
@@ -173,6 +173,21 @@ router.get('/getAnnouncements', staffAuth, async (req,res)=>{
     } catch (error) {
         console.error(error);
     }
+})
+
+router.get('/bookedSlots', staffAuth, async (req,res)=>{
+    try {
+        const result = await bookedSlots();
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+router.post('/changeStatus', staffAuth, async (req,res)=>{
+    console.log(req.body);
+    const result = await changeStatus({...req.body});
+    res.json(result);
 })
 
 export default router;

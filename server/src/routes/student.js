@@ -1,5 +1,5 @@
 import express from "express"
-import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, makePayment, verifySignature, studentLogin, studentSignup, updateCartQuantity, getAnnouncements } from "../../helpers/student-helpers.js";
+import { addToCart, confirmOrder, deleteItem, getCartItems, getEquipments, getOrders, makePayment, verifySignature, studentLogin, studentSignup, updateCartQuantity, getAnnouncements, bookSlot, getBadmintonSlot, getTableTennisSlot, getMySlots } from "../../helpers/student-helpers.js";
 import { studentAuth } from "../../middlewares/studentAuth.js";
 var router = express.Router();
 
@@ -120,4 +120,39 @@ router.get('/getAnnouncements', studentAuth, async (req,res)=>{
   }
 })
 
+router.post('/bookSlot', studentAuth, async (req,res)=>{
+  try {
+    const result = await bookSlot({ ...req.body, student: req.student._id })
+    res.json(result)
+  } catch (error) {
+    console.error(error);
+  }
+})
+
+router.get('/getBadmintonSlot', studentAuth, async (req,res)=>{
+  try {
+    const result = await getBadmintonSlot();
+    res.json(result)
+  } catch (error) {
+    console.error(error);
+  }
+})
+
+router.get('/getTableTennisSlot', studentAuth, async (req,res)=>{
+  try {
+    const result = await getTableTennisSlot();
+    res.json(result)
+  } catch (error) {
+    console.error(error);
+  }
+})
+
+router.get('/getMySlots', studentAuth, async(req,res)=>{
+  try {
+    const result = await getMySlots(req.student._id);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+  }
+})
 export default router;

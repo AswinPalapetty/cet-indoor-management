@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import './StudentNavBar.css'
 import cet_emblem_white1 from "../../images/cet_emblem_white1.png"
 import { useNavigate } from 'react-router-dom'
@@ -13,6 +13,11 @@ function StudentNavBar() {
   const [badminton, setBadminton] = useState(false)
   const { cartLength, setCartLength } = useContext(cartContext)
   const [announcementsCount, setAnnouncementsCount] = useState(0)
+  const [badmintonSlots, setBadmintonSlots] = useState([])
+  const [tableTennisSlots, setTableTennisSlots] = useState([])
+  const [slot, setSlot] = useState('')
+  const [mySlots, setMySlots] = useState([])
+  const ButtonRef = useRef(null)
 
   const cookies = new Cookies()
   const jwtToken = cookies.get("jwt_authorization")
@@ -31,6 +36,46 @@ function StudentNavBar() {
       setAnnouncementsCount(result.data.announcements.length)
     })
   }, [])
+
+  const getBadmintonSlot = () => {
+    axios.get('/student/getBadmintonSlot', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+      setBadmintonSlots(result.data.slots)
+    })
+  }
+
+  const getTableTennisSlot = () => {
+    axios.get('/student/getTableTennisSlot', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+      setTableTennisSlots(result.data.slots)
+    })
+  }
+
+  const bookSlot = () => {
+    let court = ""
+    if (badminton) {
+      court = "badminton";
+    }
+    else {
+      court = "table_tennis";
+    }
+    axios.post('/student/bookSlot', { court, slot }, { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+      if (result.data.booking) {
+        alert(result.data.message)
+        ButtonRef.current.click();
+        setSlot('')
+      }
+      else {
+        alert(result.data.message)
+        ButtonRef.current.click();
+        setSlot('')
+      }
+    })
+  }
+
+  const getMySlots = () => {
+    axios.get('/student/getMySlots', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+      setMySlots(result.data);
+    })
+  }
 
   //Logout button
   const Logout = () => {
@@ -63,12 +108,17 @@ function StudentNavBar() {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Book your slot</a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => setBadminton(true)}>Badminton Court</a></li>
-                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => setBadminton(false)}>Table Tennis</a></li>
-
-                  {/* <li><hr className="dropdown-divider" /></li>
-                <li><a className="dropdown-item" href="#">Something else here</a></li> */}
-
+                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => {
+                    getBadmintonSlot();
+                    setBadminton(true);
+                  }
+                  }>Badminton Court</a></li>
+                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => {
+                    getTableTennisSlot();
+                    setBadminton(false);
+                  }
+                  }>Table Tennis</a></li>
+                  <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target="#mySlots" onClick={getMySlots}>My Slots</a></li>
                 </ul>
               </li>
 
@@ -128,31 +178,78 @@ function StudentNavBar() {
                 <input type="date" class="form-control" value={formattedDate} disabled />
               </div>
               <div className="mb-3">
-                <select class="form-select" aria-label="Default select example">
+                <select class="form-select" aria-label="Default select example" value={slot} onChange={(e) => setSlot(e.target.value)}>
                   <option selected>Select your slot</option>
-                  <option value="9:30-10:30">9:30 - 10:30am</option>
-                  <option value="10:30-11:30">10:30 - 11:30am</option>
-                  <option value="11:30-12:30">11:30 - 12:30pm</option>
-                  <option value="12:30-13:30">12:30 - 1:30pm</option>
-                  <option value="13:30-14:30">1:30 - 2:30pm</option>
-                  <option value="14:30-15:30">2:30 - 3:30pm</option>
-                  <option value="15:30-16:30">3:30 - 4:30pm</option>
-                  <option value="16:30-17:30">4:30 - 5:30pm</option>
-                  <option value="17:30-18:30">5:30 - 6:30pm</option>
-                  <option value="18:30-19:30">6:30 - 7:30pm</option>
-                  <option value="19:30-20:30">7:30 - 8:30pm</option>
-                  <option value="20:30-21:30">8:30 - 9:30pm</option>
+                  {badminton ?
+                    (
+                      badmintonSlots &&
+                      badmintonSlots.map((eachSlot) => (<option value={eachSlot}>{eachSlot}</option>)
+                      )
+                    )
+                    :
+                    (
+                      tableTennisSlots &&
+                      tableTennisSlots.map((eachSlot) =>
+                        (<option value={eachSlot}>{eachSlot}</option>)
+                      )
+                    )
+                  }
                 </select>
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type='submit' className="slot-submit btn">Confirm</button>
+              <button ref={ButtonRef} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type='submit' className="slot-submit btn" onClick={bookSlot}>Confirm</button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* MODAL */}
+
+      <div style={{ zIndex: "1" }} className="modal fade" id="mySlots" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">My Slots</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+
+              {
+                (mySlots.length > 0) ?
+                  <table class="table text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col">Court</th>
+                        <th scope="col">Slot</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mySlots.map((eachCourt) => {
+                        eachCourt.court = eachCourt.court.replace(/_/g, ' ');
+                        return (
+                          <tr>
+                            <td scope="row">{eachCourt.court}</td>
+                            <td colspan="2">{eachCourt.slot}</td>
+                          </tr>
+                        )
+                      }
+                      )}
+                    </tbody>
+                  </table>
+                  :
+                  <h6 className='text-center' style={{ marginTop: "5%" }}>You haven't booked any courts.</h6>
+              }
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
+
+
   )
 }
 

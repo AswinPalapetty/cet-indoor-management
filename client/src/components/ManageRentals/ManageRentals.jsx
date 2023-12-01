@@ -15,11 +15,19 @@ function ManageRentals() {
 
     useEffect(() => {
         axios.get('/staff/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
-            console.log(result);
             setOrders(result.data)
             setLoading(false)
         })
     }, [])
+
+    const changeStatus = async (orderId, equipmentId) => {
+        axios.post('/staff/changeStatus', {orderId, equipmentId}, { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+
+            axios.get('/staff/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((new_result) => {
+                setOrders(new_result.data)
+            })
+        })
+    }
     return (
         <div>
             <StaffNavBar />
@@ -39,6 +47,7 @@ function ManageRentals() {
                                     <th scope='col'>Fine</th>
                                     <th scope='col'>Status</th>
                                     <th scope='col'></th>
+                                    <th scope='col'></th>
                                 </tr>
                                 {orders.map((item) => {
                                     const dueDateObject = new Date(item.dueDate);
@@ -55,6 +64,7 @@ function ManageRentals() {
                                         <td style={{ color: "red" }}>{item.dueDate}</td>
                                         {item.fine > 0 ? <td style={{ color: "red" }}>{item.fine}</td> : <td style={{ color: "green" }}>{item.fine}</td>}
                                         <td>{item.status}</td>
+                                        {/* {(item.status === "In hand") ? <td><button className='btn btn-danger' onClick={() => changeStatus(item._id, item.equipment._id)}>Change Status</button></td> : <td></td>} */}
                                     </tr>)
                                 })}
                             </thead>

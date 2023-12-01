@@ -9,6 +9,8 @@ import razorpay from "razorpay";
 import { createHash, createHmac, randomBytes } from 'node:crypto';
 import Razorpay from "razorpay";
 import announcementModel from "../models/announcementModel.js";
+import slotsModel from "../models/slotsModel.js";
+import bookingModel from "../models/bookingModel.js";
 
 const saltRounds = 10; //for password hashing
 
@@ -33,7 +35,7 @@ export const studentSignup = async (studentData) => {
 
             const token = await JWT.sign({ _id: user._id }, process.env.TOKEN, {
                 expiresIn: "7d"
-            })
+            });
 
             //select specific keys and returning
             // const selectedKeys = ['name', 'email', 'admission', 'mobile'];
@@ -55,22 +57,22 @@ export const studentLogin = async (studentData) => {
         const existingUser = await studentModel.findOne({ admission: studentData.admission });
 
         if (existingUser) {
-            const password_status = await bcrypt.compare(studentData.password, existingUser.password)
+            const password_status = await bcrypt.compare(studentData.password, existingUser.password);
             if (password_status) {
                 const token = await JWT.sign({ _id: existingUser._id }, process.env.TOKEN, {
                     expiresIn: "7d"
-                })
+                });
                 return {
                     message: "Login successfull",
                     token
-                }
+                };
             }
             else {
-                return { message: "Incorrect password", token: null }
+                return { message: "Incorrect password", token: null };
             }
         }
         else {
-            return { message: "Admission Number is not registered", token: null }
+            return { message: "Admission Number is not registered", token: null };
         }
     } catch (error) {
         throw error; // Handle or log the error as needed
@@ -301,7 +303,7 @@ export const verifySignature = async (userId, razorpayOrderId, razorpayPaymentId
             await order.save()
             const equipment = await equipmentsModel.findById(order.equipments[Number(razorpayOrder.receipt.split('-')[1])].equipment)
             const newStock = equipment.stock + order.equipments[Number(razorpayOrder.receipt.split('-')[1])].quantity
-            await equipmentsModel.findByIdAndUpdate(order.equipments[Number(razorpayOrder.receipt.split('-')[1])].equipment, {stock : newStock},{new : true})
+            await equipmentsModel.findByIdAndUpdate(order.equipments[Number(razorpayOrder.receipt.split('-')[1])].equipment, { stock: newStock }, { new: true })
             return { message: "Payment verified successfully" };
         } else {
             return { message: "Invalid signature sent!" };
@@ -350,4 +352,76 @@ export const getAnnouncements = async () => {
     catch (error) {
         throw error;
     }
+}
+
+export const bookSlot = async (bookingData) => {
+    try {
+        const query = {
+            [`slots.${bookingData.slot}.${bookingData.court}`]: { $gt: 0 }
+        }
+
+        const result = await slotsModel.findOne(query);
+
+        if (result) {
+
+            const alreadyBooked = await bookingModel.findOne({ student: bookingData.student, court: bookingData.court, today: true });
+
+            if (!alreadyBooked) {
+                const booking = await new bookingModel({ student: bookingData.student, court: bookingData.court, slot: bookingData.slot, today: true }).save();
+
+                if (booking) {
+
+                    const vaccantSlots = result.slots[bookingData.slot][bookingData.court] - 1
+                    await slotsModel.findByIdAndUpdate(result._id, { [`slots.${bookingData.slot}.${bookingData.court}`]: vaccantSlots });
+                    return { booking, message: "Slot booking successfull" }
+                }
+            }
+            else {
+                return { booking: null, message: "You have already booked a slot" }
+            }
+        }
+        else {
+
+            return { booking: null, message: "The selected slot is full." }
+        }
+
+    } catch (error) {
+        throw error;
+    }
+
+    // const slots = {
+    //     "9:30-10:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "10:30-11:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "11:30-12:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "12:30-13:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "13:30-14:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "14:30-15:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "15:30-16:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "16:30-17:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "17:30-18:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "18:30-19:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "19:30-20:30": {'badminton' : 4, 'table_tennis' : 4},
+    //     "20:30-21:30": {'badminton' : 4, 'table_tennis' : 4}
+    // }
+
+    // const result = new slotsModel({ slots }).save();
+
+
+}
+
+export const getBadmintonSlot = async () => {
+    const result = await slotsModel.find();
+    const slots = Object.keys(result[0].slots).filter(key => result[0].slots[key].badminton > 0);
+    return { slots };
+}
+
+export const getTableTennisSlot = async () => {
+    const result = await slotsModel.find();
+    const slots = Object.keys(result[0].slots).filter(key => result[0].slots[key].table_tennis > 0);
+    return { slots };
+}
+
+export const getMySlots = async (student) => {
+    const result = await bookingModel.find({ student, today: true });
+    return result;
 }

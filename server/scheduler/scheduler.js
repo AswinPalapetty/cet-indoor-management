@@ -7,5 +7,6 @@ export const initScheduler = () => {
         await updateOrderFine()
         await updateAttendanceStatus()
         await sendEmail()
+        await updateSlot()
     });
 }

@@ -102,7 +102,7 @@ function ManageEquipments() {
 
             {insertedEquipments.map((rowData) => (
               <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 mt-4">
-                <div className="card" style={{ width: "19rem", height : "20rem" }}>
+                <div className="card" style={{ width: "19rem", height : "20rem", boxShadow: '5px 5px 10px #aaaaaa' }}>
                   <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} style={{height :"40%",objectFit:"contain"}}/>
                   <div className="card-body">
                     <div className="text-center mb-4">

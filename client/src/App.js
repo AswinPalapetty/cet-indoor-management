@@ -40,7 +40,7 @@ function App() {
         <Route path='staff/gymAttendance' element={staff ? <GymAttendance /> : <StaffLogin />} />
         <Route path='staff/equipments' element={staff ? <ManageEquipments /> : <StaffLogin />} />
         <Route path='staff/slots' element={staff ? <ManageSlots /> : <StaffLogin />} />
-        <Route path='student/announcements' element={staff ? <Announcements /> : <StaffLogin />} />
+        <Route path='student/announcements' element={student ? <Announcements /> : <StudentLogin />} />
         <Route path='staff/announcements' element={staff ? <ManageAnnouncements /> : <StaffLogin />} />
         <Route path='student/myEquipments' element={student ? <MyEquipments /> : <StudentLogin />} />
         <Route path='staff/rentals' element={staff ? <ManageRentals /> : <StaffLogin />} />

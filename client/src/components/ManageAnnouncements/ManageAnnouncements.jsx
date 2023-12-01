@@ -3,10 +3,12 @@ import './ManageAnnouncements.css'
 import StaffNavBar from '../StaffNavBar/StaffNavBar'
 import axios from '../../utilities/Axios'
 import Cookies from 'universal-cookie';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ManageAnnouncements() {
+  const [loading, setLoading] = useState(true)
   const cookies = new Cookies();
   const fileInputRef = useRef();
   const CloseButtonRef = useRef(null);
@@ -19,6 +21,7 @@ function ManageAnnouncements() {
   useEffect(() => {
     axios.get('/staff/getAnnouncements', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
       setAnnouncements(result.data.announcements)
+      setLoading(false)
     })
   }, [])
 
@@ -97,7 +100,7 @@ function ManageAnnouncements() {
             </button>
           </div>
           {
-            (Announcements.length > 0) &&
+            (Announcements.length > 0) ?
             <div>
               {Announcements.map((rowData) => {
                 const date = new Date(rowData.createdAt);
@@ -145,7 +148,7 @@ function ManageAnnouncements() {
                   </div>
                 )
               })}
-            </div>
+            </div> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h5 className='text-center mt-5'>No Announcements Found.</h5>)
           }
         </div>
       </div>

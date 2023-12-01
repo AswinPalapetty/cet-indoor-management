@@ -2,6 +2,7 @@ import staffModel from "../models/staffModel.js";
 import studentModel from '../models/studentModel.js';
 import AttendanceModel from '../models/AttendanceModel.js'
 import equipmentsModel from '../models/equipmentsModel.js'
+import bookingModel from '../models/bookingModel.js'
 import orderModel from '../models/orderModel.js'
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
@@ -10,6 +11,7 @@ import mongoose from "mongoose";
 import announcementModel from "../models/announcementModel.js";
 import { createTransport } from 'nodemailer';
 import Mailgen from 'mailgen';
+import slotsModel from "../models/slotsModel.js";
 
 const saltRounds = 10; //for password hashing
 
@@ -462,10 +464,60 @@ export const sendEmail = async () => {
         transporter.sendMail(message).then(() => {
             console.log("successfull email");
         }).catch(error => {
-            console.log("email  error : "+error);
+            console.log("email  error : " + error);
         })
 
     })
 
+}
 
+export const bookedSlots = async () => {
+    const result = await bookingModel.find({ today: true })
+        .populate({
+            path: "student",
+            select: "name admission mobile",
+            model: "students",
+            populate: {
+                path: "_id",
+                select: "name admission mobile",
+                model: "students"
+            }
+        });
+    return result;
+}
+
+export const updateSlot = async () => {
+    await slotsModel.deleteMany();
+
+    const slots = {
+        "9:30-10:30": { 'badminton': 4, 'table_tennis': 4 },
+        "10:30-11:30": { 'badminton': 4, 'table_tennis': 4 },
+        "11:30-12:30": { 'badminton': 4, 'table_tennis': 4 },
+        "12:30-13:30": { 'badminton': 4, 'table_tennis': 4 },
+        "13:30-14:30": { 'badminton': 4, 'table_tennis': 4 },
+        "14:30-15:30": { 'badminton': 4, 'table_tennis': 4 },
+        "15:30-16:30": { 'badminton': 4, 'table_tennis': 4 },
+        "16:30-17:30": { 'badminton': 4, 'table_tennis': 4 },
+        "17:30-18:30": { 'badminton': 4, 'table_tennis': 4 },
+        "18:30-19:30": { 'badminton': 4, 'table_tennis': 4 },
+        "19:30-20:30": { 'badminton': 4, 'table_tennis': 4 },
+        "20:30-21:30": { 'badminton': 4, 'table_tennis': 4 }
+    }
+
+    await new slotsModel({ slots }).save();
+
+    const bookings = await bookingModel.find({ today: true })
+    bookings.map(async (booking) => {
+        await booking.updateOne({ today: false })
+    })
+    console.log("Slots updated");
+    console.log("Booking status updated");
+}
+
+export const changeStatus = async (orderId, equipmentId) => {
+    const orders = await orderModel.findById(new mongoose.Types.ObjectId(orderId));
+    orders.map(async (order) => {
+        await order.updateOne({equipment : new mongoose.Types.ObjectId(equipmentId)},{status: "returned"})
+    })
+    console.log(orders);
 }

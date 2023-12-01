@@ -6,7 +6,7 @@ import { config } from 'dotenv'
 import connectDB from "../config/connection.js"
 import { initScheduler } from "../scheduler/scheduler.js"
 import { updateOrderFine } from "../helpers/student-helpers.js"
-import { sendEmail, updateAttendanceStatus } from "../helpers/staff-helpers.js"
+import { sendEmail, updateAttendanceStatus, updateSlot } from "../helpers/staff-helpers.js"
 
 //dotenv configuration
 config()

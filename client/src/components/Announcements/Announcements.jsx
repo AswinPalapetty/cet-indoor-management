@@ -3,16 +3,19 @@ import './Announcements.css'
 import StudentNavBar from '../StudentNavBar/StudentNavBar'
 import axios from '../../utilities/Axios'
 import Cookies from 'universal-cookie';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 function Announcements() {
   const cookies = new Cookies();
   const [Announcements, setAnnouncements] = useState([])
+  const [loading, setLoading] = useState(true)
   const jwtToken = cookies.get("jwt_authorization")
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     axios.get('/student/getAnnouncements', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
-      setAnnouncements(result.data.announcements)
+      setAnnouncements(result.data.announcements);
+      setLoading(false);
     })
   }, [])
 
@@ -95,7 +98,7 @@ function Announcements() {
                     </div>
                   )
                 })}
-              </div> : <h5 className='text-center mt-5'>No Announcements Found.</h5>
+              </div> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h5 className='text-center mt-5'>No Announcements Found.</h5>)
           }
 
         </div>
