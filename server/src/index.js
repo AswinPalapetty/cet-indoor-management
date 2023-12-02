@@ -20,7 +20,13 @@ initScheduler();
 
 const app = express()
 
-app.use(cors());
+app.use(cors(
+    {
+        origin: process.env.CLIENT_URL.split(' '),
+        methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
+        credentials: true
+    }
+));
 app.use(express.json());
 app.use("/student", student);
 app.use("/staff", staff);
