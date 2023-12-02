@@ -1,0 +1,23 @@
+{
+    "name": "cet-indoor-management-system-server",
+    "version": 2,
+    "routes": [
+      {
+        "src": "/api/staff/(.*)",
+        "dest": "/routes/staff.js"
+      },
+      {
+        "src": "/api/student/(.*)",
+        "dest": "/routes/student.js"
+      },
+      {
+        "src": "/api/(.*)",
+        "dest": "/index.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/$1"
+      }
+    ]
+  }
+  
