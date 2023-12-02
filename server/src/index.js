@@ -20,13 +20,7 @@ initScheduler();
 
 const app = express()
 
-app.use(cors(
-    {
-        origin:["https://cet-indoor-management-server.vercel.app/"],
-        methods: ["POST","GET"],
-        credentials: true
-    }
-));
+app.use(cors());
 app.use(express.json());
 app.use("/student", student);
 app.use("/staff", staff);
