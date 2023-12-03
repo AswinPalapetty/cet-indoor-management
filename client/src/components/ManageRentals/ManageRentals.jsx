@@ -20,12 +20,18 @@ function ManageRentals() {
         })
     }, [])
 
-    const changeStatus = async (orderId, equipmentId) => {
-        axios.post('/staff/changeStatus', {orderId, equipmentId}, { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+    const getorders = async ()=>{
+        await axios.get('/staff/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+            setOrders(result.data)
+        })
+    }
 
-            axios.get('/staff/orders', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((new_result) => {
-                setOrders(new_result.data)
-            })
+    const changeStatus = async (orderId, equipmentId) => {
+        axios.post('/staff/changeStatus', {orderId, equipmentId}, { headers: { Authorization: `Bearer ${jwtToken}` } }).then(async (result) => {
+            if(result.data.success){
+                await getorders();
+                alert(result.data.message)
+            }
         })
     }
     return (
@@ -64,7 +70,7 @@ function ManageRentals() {
                                         <td style={{ color: "red" }}>{item.dueDate}</td>
                                         {item.fine > 0 ? <td style={{ color: "red" }}>{item.fine}</td> : <td style={{ color: "green" }}>{item.fine}</td>}
                                         <td>{item.status}</td>
-                                        {/* {(item.status === "In hand") ? <td><button className='btn btn-danger' onClick={() => changeStatus(item._id, item.equipment._id)}>Change Status</button></td> : <td></td>} */}
+                                        {(item.status === "In hand") ? <td><button className='btn btn-danger' onClick={() => changeStatus(item._id, item.equipment._id)}>Change Status</button></td> : <td></td>}
                                     </tr>)
                                 })}
                             </thead>

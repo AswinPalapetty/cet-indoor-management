@@ -242,6 +242,11 @@ export const getOrders = async () => {
                 $unwind: "$equipments" //array in collection order
             },
             {
+                $match: {
+                    "equipments.status": "In hand"
+                }
+            },
+            {
                 $lookup: {
                     from: "equipments", // collection
                     localField: "equipments.equipment", //equipment id in array named equipments
@@ -514,10 +519,15 @@ export const updateSlot = async () => {
     console.log("Booking status updated");
 }
 
-export const changeStatus = async (orderId, equipmentId) => {
-    const orders = await orderModel.findById(new mongoose.Types.ObjectId(orderId));
-    orders.map(async (order) => {
-        await order.updateOne({equipment : new mongoose.Types.ObjectId(equipmentId)},{status: "returned"})
-    })
-    console.log(orders);
+export const changeStatus = async (orderDetails) => {
+    try {
+        const order = await orderModel.findOneAndUpdate({ _id: orderDetails.orderId, equipments: { $elemMatch: { equipment: new mongoose.Types.ObjectId(orderDetails.equipmentId) } } }, { $set: { 'equipments.$.status': 'returned' } }, { new: true }).populate('equipments.equipment');
+        console.log(order);
+        const equipment = order.equipments.find((equipment) => String(equipment.equipment._id) === orderDetails.equipmentId);
+        console.log(equipment);
+        await equipment.equipment.updateOne({ $inc: { stock: equipment.quantity } })
+        return { success: true, message: "Status changed successfully." }
+    } catch (error) {
+        throw error;
+    }
 }

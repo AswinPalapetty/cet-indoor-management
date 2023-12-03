@@ -90,6 +90,7 @@
     .staff-signup .input-signup input,
     .input-group-text {
         height: 50px;
+        width: 75%;
         background: transparent;
         border: none;
         outline: none;

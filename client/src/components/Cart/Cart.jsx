@@ -74,7 +74,7 @@ function Cart() {
                                 {cartItems.map((rowData) => (
                                     <tr>
                                         <td><img style={{ width: "6rem", height: "4rem", objectFit: "contain" }} src={baseUrl + '/images/' + rowData.equipment.filename} alt={rowData.equipment.filename} /></td>
-                                        <td><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(-1, rowData.equipment._id)}>-</button><span style={{ fontSize: "larger", fontWeight: "bold", marginLeft: "3%", marginRight: "3%" }}> {rowData.quantity} </span><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(1, rowData.equipment._id)}>+</button></td>
+                                        <td><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(-1, rowData.equipment._id)}>-</button><span style={{ fontSize: "larger", fontWeight: "bold" }}> {rowData.quantity} </span><button type="button" className="btn btn-outline-primary" onClick={() => changeQuantity(1, rowData.equipment._id)}>+</button></td>
                                         <td><button type="button" className="btn btn-danger" onClick={() => deleteItem(rowData._id)}>Remove</button></td>
                                     </tr>
                                 ))}
