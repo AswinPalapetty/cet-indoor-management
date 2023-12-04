@@ -41,7 +41,6 @@ app.use("/student", student);
 app.use("/staff", staff);
 app.use('/images', express.static('./public/images'));
 app.use('/announcement-files', express.static('./public/announcements'));
-console.log(process.env.STAGE)
 if (!process.env.STAGE || process.env.STAGE === 'dev') {
     app.post('/image-upload', imageUpload.any('files'), (_req, res) => res.json({ success: true }))
     app.post('/announcement-upload', announcementUpload.any('files'), (_req, res) => res.json({ success: true }))

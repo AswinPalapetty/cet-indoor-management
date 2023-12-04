@@ -32,7 +32,7 @@ function ManageEquipments() {
         alert(result.data.message);
       })
     }
-    
+
   }
 
   const updateEquipment = () => {
@@ -59,19 +59,24 @@ function ManageEquipments() {
 
   const addEquipment = () => {
     const formData = { equipment, stock, file }
-    axios.post('/staff/addEquipment', formData, { headers: { "Content-Type": "multipart/form-data" } }).then((result) => {
-      if (result.data.equipment) {
-        setInsertedEquipments([...insertedEquipments, result.data.equipment]);
-        setEquipment('');
-        setStock('');
-        setFile('');
-        // Clear the file input 
-        fileInputRef.current.value = '';
+    if (equipment && stock && file) {
+      axios.post('/staff/addEquipment', formData, { headers: { "Content-Type": "multipart/form-data" } }).then((result) => {
+        if (result.data.equipment) {
+          setInsertedEquipments([...insertedEquipments, result.data.equipment]);
+          setEquipment('');
+          setStock('');
+          setFile('');
+          // Clear the file input 
+          fileInputRef.current.value = '';
 
-        alert(result.data.message);
-        CloseButtonRef.current.click();
-      }
-    })
+          alert(result.data.message);
+          CloseButtonRef.current.click();
+        }
+      })
+    }
+    else {
+      alert("Please enter full details and upload file before adding.")
+    }
   }
 
   const closeButton = () => {
@@ -102,8 +107,8 @@ function ManageEquipments() {
 
             {insertedEquipments.map((rowData) => (
               <div className="card-div col-lg-3 col-md-4 col-sm-6 col-12 mt-4">
-                <div className="card" style={{ width: "19rem", height : "20rem", boxShadow: '5px 5px 10px #aaaaaa' }}>
-                  <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} style={{height :"40%",objectFit:"contain"}}/>
+                <div className="card" style={{ width: "19rem", height: "20rem", boxShadow: '5px 5px 10px #aaaaaa' }}>
+                  <img src={baseUrl + '/images/' + rowData.filename} className="card-img-top" alt={rowData.filename} style={{ height: "40%", objectFit: "contain" }} />
                   <div className="card-body">
                     <div className="text-center mb-4">
                       <h5 className="card-title">{rowData.equipment}</h5>

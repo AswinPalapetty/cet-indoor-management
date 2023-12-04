@@ -6,6 +6,7 @@ import { studentContext } from '../../contexts/StudentContext'
 import Cookies from 'universal-cookie'
 import { cartContext } from '../../contexts/CartContext'
 import axios from '../../utilities/Axios'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 function StudentNavBar() {
   const navigate = useNavigate()
@@ -17,6 +18,7 @@ function StudentNavBar() {
   const [tableTennisSlots, setTableTennisSlots] = useState([])
   const [slot, setSlot] = useState('')
   const [mySlots, setMySlots] = useState([])
+  const [loading, setLoading] = useState(true)
   const ButtonRef = useRef(null)
 
   const cookies = new Cookies()
@@ -74,6 +76,7 @@ function StudentNavBar() {
   const getMySlots = () => {
     axios.get('/student/getMySlots', { headers: { Authorization: `Bearer ${jwtToken}` } }).then((result) => {
       setMySlots(result.data);
+      setLoading(false);
     })
   }
 
@@ -239,7 +242,7 @@ function StudentNavBar() {
                     </tbody>
                   </table>
                   :
-                  <h6 className='text-center' style={{ marginTop: "5%" }}>You haven't booked any courts.</h6>
+                  (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ margin: "10% 40% 10%", width: "50px", height: "50px" }} /> : <h6 className='text-center' style={{ marginTop: "5%" }}>You haven't booked any courts.</h6>)
               }
 
             </div>

@@ -40,19 +40,24 @@ function ManageAnnouncements() {
 
   const makeAnnouncement = () => {
     const formData = { title, content, file }
-    axios.post('/staff/addAnnouncement', formData, { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${jwtToken}` } }).then((result) => {
-      if (result.data.announcement) {
-        setAnnouncements([...Announcements, result.data.announcement]);
-        setTitle('');
-        setContent('');
-        setFile('');
-        // Clear the file input 
-        fileInputRef.current.value = '';
+    if (title && content && file) {
+      axios.post('/staff/addAnnouncement', formData, { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${jwtToken}` } }).then((result) => {
+        if (result.data.announcement) {
+          setAnnouncements([...Announcements, result.data.announcement]);
+          setTitle('');
+          setContent('');
+          setFile('');
+          // Clear the file input 
+          fileInputRef.current.value = '';
 
-        alert(result.data.message);
-        CloseButtonRef.current.click();
-      }
-    })
+          alert(result.data.message);
+          CloseButtonRef.current.click();
+        }
+      })
+    }
+    else{
+      alert("Please enter all details and upload file before confirm.")
+    }
   }
 
   const closeButton = () => {
@@ -101,54 +106,54 @@ function ManageAnnouncements() {
           </div>
           {
             (Announcements.length > 0) ?
-            <div>
-              {Announcements.map((rowData) => {
-                const date = new Date(rowData.createdAt);
-                const newDate = date.toLocaleDateString('en-GB');
+              <div>
+                {Announcements.map((rowData) => {
+                  const date = new Date(rowData.createdAt);
+                  const newDate = date.toLocaleDateString('en-GB');
 
-                return (
-                  <div className="col-12 mb-3">
-                    <div className="staff-posts">
-                      <i className="fa-duotone fa-megaphone announcement-icon"></i>
-                      <div className="staff-posts-body" data-bs-toggle="modal" data-bs-target="#view-announcement">
-                        <div className="staff-posts-title" style={{ fontSize: "16px", fontWeight: "500" }}>{rowData.title}</div>
-                        <div className="staff-posts-date" style={{ fontSize: "12px" }}>{newDate}</div>
+                  return (
+                    <div className="col-12 mb-3">
+                      <div className="staff-posts">
+                        <i className="fa-duotone fa-megaphone announcement-icon"></i>
+                        <div className="staff-posts-body" data-bs-toggle="modal" data-bs-target="#view-announcement">
+                          <div className="staff-posts-title" style={{ fontSize: "16px", fontWeight: "500" }}>{rowData.title}</div>
+                          <div className="staff-posts-date" style={{ fontSize: "12px" }}>{newDate}</div>
+                        </div>
+                        <i class="fa-duotone fa-trash" onClick={() => deleteAnnouncement(rowData._id, rowData.filename)}></i>
                       </div>
-                      <i class="fa-duotone fa-trash" onClick={() => deleteAnnouncement(rowData._id, rowData.filename)}></i>
-                    </div>
 
-                    {/* MODAL */}
-                    <div className="modal fade" id="view-announcement" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                      <div className="modal-dialog">
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="staticBackdropLabel">{rowData.title}</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-
-                          <div className="modal-body">
-
-                            <div className="content">
-                              {rowData.content}
+                      {/* MODAL */}
+                      <div className="modal fade" id="view-announcement" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h1 className="modal-title fs-5" id="staticBackdropLabel">{rowData.title}</h1>
+                              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {rowData.filename && <div className="files mt-4">
-                              <div class="card">
-                                <div class="card-body">
-                                  <i class="fa-duotone fa-download download-btn" onClick={() => handleDownload(baseUrl + '/announcement-files/' + rowData.filename, rowData.filename)}></i>
-                                </div>
+
+                            <div className="modal-body">
+
+                              <div className="content">
+                                {rowData.content}
                               </div>
-                            </div>}
+                              {rowData.filename && <div className="files mt-4">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <i class="fa-duotone fa-download download-btn" onClick={() => handleDownload(baseUrl + '/announcement-files/' + rowData.filename, rowData.filename)}></i>
+                                  </div>
+                                </div>
+                              </div>}
+
+                            </div>
 
                           </div>
-
                         </div>
                       </div>
-                    </div>
 
-                  </div>
-                )
-              })}
-            </div> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h5 className='text-center mt-5'>No Announcements Found.</h5>)
+                    </div>
+                  )
+                })}
+              </div> : (loading ? <ClipLoader color="#4c00b4" size={80} cssOverride={{ marginTop: "15%" }} /> : <h5 className='text-center mt-5'>No Announcements Found.</h5>)
           }
         </div>
       </div>
